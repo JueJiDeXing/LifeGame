@@ -1,11 +1,10 @@
 package com.jjdx.lifegame.Frames;
 
-import com.jjdx.lifegame.Plugins.Achievement;
-import com.jjdx.lifegame.Plugins.Creator;
-import com.jjdx.lifegame.Plugins.Loader;
+import com.jjdx.lifegame.Plugins.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -36,14 +35,15 @@ import static com.jjdx.lifegame.Plugins.Util.*;
  @ Time: 2024/4/28 <br> */
 public class MainFrame extends Application {
 
+
     public static void main(String[] args) {
         launch();
     }
 
     Pane rootPane = new Pane();
     Stage primaryStage;
-    int offsetX = 60, offsetY = 70;//方格的偏移量
-    public int row = 45, col = 55, len = 15;//方格的行列数和每块的边长
+    int offsetX = Config.getInt("board.offsetX"), offsetY = Config.getInt("board.offsetY");//方格的偏移量
+    public int row = Config.getInt("board.row"), col = Config.getInt("board.col"), len = Config.getInt("board.len");//方格的行列数和每块的边长
     public Rectangle[][] map = new Rectangle[row][col];//方格
     public Color liveColor = Color.WHITE, deadColor = Color.BLACK;//细胞的死活颜色
     int fact = 1;//加速因子
@@ -51,7 +51,7 @@ public class MainFrame extends Application {
     boolean isStart = false;//是否为开始状态
     Label liveText;//存活数量显示
     HelpFrame helpFrame = null;//帮助界面
-
+    int width = Config.getInt("window.width");
 
     @Override
     public void start(Stage stage) {
@@ -67,10 +67,21 @@ public class MainFrame extends Application {
      */
     private void init(Stage stage) {
         primaryStage = stage;
-        Scene scene = new Scene(rootPane, 1400, 820);
+        Scene scene = new Scene(rootPane, width, 820);
         rootPane.setStyle("-fx-background-color: #129d4f");
         stage.setTitle("生命游戏");
-        stage.getIcons().add(new Image(Loader.findFilePath("mylife.png")));
+        /*
+        Image icon=new Image("src\\main\\resources\\Images\\mylife.png");
+        Image icon=new Image("src/main/resources/Images/mylife.png");
+        Image icon=new Image("Images/mylife.png");
+        Image icon=new Image("Images\\mylife.png");
+        Image icon=new Image("resources\\Images\\mylife.png");
+        Image icon=new Image("resources/Images/mylife.png");
+        Image icon=new Image("main/resources/Images/mylife.png");
+        Image icon=new Image("main\\resources\\Images\\mylife.png");
+        */
+        Image icon = new Image(Loader.findFilePath("mylife.png"));// 因为相对路径我怎么写都报错找不到文件,所以暴力搜
+        stage.getIcons().add(icon);
         stage.setScene(scene);
         stage.show();
     }

@@ -44,7 +44,8 @@ public class HelpFrame {
         window = new Stage();
         pane = new Pane();
         Scene newScene = new Scene(pane, 900, 800);
-        window.getIcons().add(new Image(Loader.findFilePath("mylife.png")));
+        Image icon = new Image(Loader.findFilePath("mylife.png"));
+        window.getIcons().add(icon);
         window.setTitle("帮助");
         window.setScene(newScene);
         window.show();
@@ -55,7 +56,7 @@ public class HelpFrame {
     List<Label> bar = new ArrayList<>();
 
     /**
-     初始化到bar
+     初始化List<Label> bar
      */
     private void initBar() {
         List<Pair<String, EventHandler<MouseEvent>>> list = List.of(
@@ -66,7 +67,7 @@ public class HelpFrame {
                 new Pair<>("繁殖者", e -> showStruct(Structure.reproduction)),
                 new Pair<>("寿星", e -> showStruct(Structure.longLife)),
                 new Pair<>("图形未加载,点击刷新", e -> reload()),
-                new Pair<>("----测试按钮----", e -> reload())
+                new Pair<>("----测试按钮----", null)
         );
         int itemPreWidth = 100, itemPreHeight = 50, itemX = 0, itemY = 0;// 横向排列按钮
         for (var s : list) {
@@ -84,11 +85,17 @@ public class HelpFrame {
         }
     }
 
+    /**
+     添加bar: 界面上方按钮
+     */
     private void addBar() {
         if (bar.isEmpty()) initBar();
         for (Label label : bar) pane.getChildren().add(label);
     }
 
+    /**
+     重新加载图形
+     */
     private void reload() {
         Structure.reload();
     }
@@ -123,10 +130,19 @@ public class HelpFrame {
     public int len = 15;//方格的行列数和每块的边长
     public Rectangle[][] map;//方格
     public Color liveColor = Color.WHITE, deadColor = Color.BLACK;//细胞的死活颜色
-
+    /**
+     图像的名称
+     */
     Label nameLabel = Creator.creatButton("", 400, 600, 100, 50);
+    /**
+     当前展示的一种图形
+     */
     List<Pair<String, List<Pair<Integer, Integer>>>> graphs;
 
+    /**
+     展示一种图形
+     * @param structs [< 图像名, 位置信息 >...]
+     */
     private void showStruct(List<Pair<String, List<Pair<Integer, Integer>>>> structs) {
         pane.setStyle("-fx-background-color: #129d4f");
         pane.getChildren().clear();
@@ -152,12 +168,19 @@ public class HelpFrame {
         nameLabel.setLayoutX((window.getWidth() - nameLabel.getPrefWidth()) / 2);
     }
 
-
+    /**
+     页码数据
+     */
     int curPage = 1, maxPage = 0;
+
+    /** 额外空出的方格,用于美观*/
     int extraBlock = 6;
 
+    /**
+     创建map区域
+     * @param bound 边界大小[最大行,最大列]
+     */
     private void createMap(int[] bound) {
-        System.out.println(bound[0] + " " + bound[1]);
         int row = bound[0] + extraBlock, col = bound[1] + extraBlock;
         map = new Rectangle[row][col];
 
@@ -174,6 +197,10 @@ public class HelpFrame {
         }
     }
 
+    /**
+     绘制图像
+     * @param graph 要绘制的图像 < 图像名, 位置信息 >
+     */
     private void drawGraph(Pair<String, List<Pair<Integer, Integer>>> graph) {
         clearMap();
         setNameLabelText(graph.getKey());
@@ -182,6 +209,9 @@ public class HelpFrame {
         }
     }
 
+    /**
+     清空图像
+     */
     private void clearMap() {
         for (Rectangle[] rectangles : map) {
             for (Rectangle rectangle : rectangles) {
@@ -190,7 +220,9 @@ public class HelpFrame {
         }
     }
 
-
+    /**
+     添加显示页码的label组件
+     */
     private void addPage() {
         int y = 700;
         Label pre = Creator.creatButton("<", 650, y, 50, 50);
@@ -202,6 +234,12 @@ public class HelpFrame {
         pane.getChildren().addAll(page, pre, next);
     }
 
+    /**
+     下/上一页
+
+     @param x    1为下一页,-1为上一页
+     @param page 显示页码的label组件
+     */
     private void changePage(int x, Label page) {
         if (curPage + x < 1 || curPage + x > maxPage) return;
         curPage += x;
