@@ -71,7 +71,6 @@ public class MainFrame extends Application {
         rootPane.setStyle("-fx-background-color: " + Config.getString("MainFrame.backgroundColor"));
         stage.setTitle("生命游戏");
         stage.setScene(scene);
-        stage.show();
         try {
             String filePath = Loader.findFilePath(Config.getString("MainFrame.icon"));
             if (filePath == null) {
@@ -82,6 +81,7 @@ public class MainFrame extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        stage.show();
     }
 
     /**
