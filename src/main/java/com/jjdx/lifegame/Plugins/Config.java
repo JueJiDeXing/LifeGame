@@ -25,7 +25,7 @@ public class Config {
         try {
             yMap = new Yaml().load(Config.class.getClassLoader().getResourceAsStream("config.yml"));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(" error:未成功读取配置文件 ");
         }
     }
 
@@ -41,8 +41,9 @@ public class Config {
 
     /**
      获取配置文件的值
-     * @param name 以"."分隔的键名
-     * @return 值,若不存在则返回默认值0
+
+     @param name 以"."分隔的键名
+     @return 值, 若不存在则返回默认值0
      */
     public static int getInt(String name) {
         return getInt(name, 0);

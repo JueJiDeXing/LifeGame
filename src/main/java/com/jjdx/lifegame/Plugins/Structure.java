@@ -15,7 +15,9 @@ import java.util.*;
  @ Author: 绝迹的星 <br>
  @ Time: 2024/4/28 <br> */
 public class Structure {
-    private Structure(){}
+    private Structure() {
+    }
+
     //名称,位置信息
     public static List<Pair<String, List<Pair<Integer, Integer>>>>
             still = new ArrayList<>(), oscillator = new ArrayList<>(),
@@ -28,13 +30,7 @@ public class Structure {
             reproductionRowMaxLen = null, reproductionColMaxLen = null,
             longLifeRowMaxLen = null, longLifeColMaxLen = null;
 
-    static List<String> types = new ArrayList<>(Arrays.asList("still", "oscillator", "fly", "reproduction", "longLife"));
-    static HashMap<String, String> typeNameToPath = new HashMap<>();
-
     static {
-        for (String type : types) {
-            typeNameToPath.put(type, Loader.findFilePath(type + ".txt"));
-        }
         reload();
     }
 
@@ -59,7 +55,8 @@ public class Structure {
      */
     static void load(List<Pair<String, List<Pair<Integer, Integer>>>> structs, String type) {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(typeNameToPath.get(type)));
+            String filePath = Loader.findFilePath(type + ".txt");
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
             br.lines().forEach(line -> {
                 String[] split = line.split(" ");
                 String name = split[0];
@@ -75,9 +72,9 @@ public class Structure {
         }
     }
 
-
     public static int[] getStillMaxLen() {
         if (stillRowMaxLen == null || stillColMaxLen == null) {
+            // 没有值则计算后保存副本
             int[] len = calMaxLen(still);
             stillRowMaxLen = len[0];
             stillColMaxLen = len[1];
@@ -121,7 +118,9 @@ public class Structure {
         return new int[]{longLifeRowMaxLen, longLifeColMaxLen};
     }
 
-
+    /**
+     计算图像的行列最大值
+     */
     public static int[] calMaxLen(List<Pair<String, List<Pair<Integer, Integer>>>> structs) {
         int maxRow = 0, maxCol = 0;
         for (var struct : structs) {
@@ -140,7 +139,6 @@ public class Structure {
         if (structs.equals(fly)) return getFlyMaxLen();
         if (structs.equals(reproduction)) return getReproductionMaxLen();
         if (structs.equals(longLife)) return getLongLifeRowMaxLenMaxLen();
-        throw new RuntimeException("未找到对应结构");
+        return new int[]{0, 0};// impossible
     }
-
 }

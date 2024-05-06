@@ -42,19 +42,17 @@ public class Loader {
         if (files == null) return null;//空的
         //进入搜索
         for (File file : files) {
-            if (file.isDirectory()) {
-                //是文件夹
-                if (isToFindFile) {//是找file的,深搜
-                    String path = dfs(file.getAbsolutePath(), fileName, isToFindFile);
-                    if (path != null) return path;
-                } else {//是找文件夹的
-                    if (file.getName().equals(fileName)) return file.getAbsolutePath();
-                }
-            } else {
+            if (!file.isDirectory()) {
                 //是文件
-                if (isToFindFile && file.getName().equals(fileName)) {//是file,且找file
-                    return file.getAbsolutePath();
-                }
+                if (isToFindFile && file.getName().equals(fileName)) return file.getAbsolutePath();//是file,且找file
+                continue;
+            }
+            //是文件夹
+            String path;
+            if (isToFindFile && (path = dfs(file.getAbsolutePath(), fileName, true)) != null) {//是找file的,深搜
+                return path;
+            } else if (file.getName().equals(fileName)) {
+                return file.getAbsolutePath(); //是找文件夹的
             }
         }
         return null;
@@ -69,8 +67,8 @@ public class Loader {
                 sb.append(line).append("\n");
             }
             reader.close();
-        } catch (Exception ignored) {
-            return "读取失败,请联系管理员";
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return sb.toString();
     }

@@ -6,12 +6,10 @@ import com.jjdx.lifegame.Plugins.Creator;
 import com.jjdx.lifegame.Plugins.Loader;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -23,14 +21,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import net.sf.image4j.codec.ico.ICODecoder;
-import javafx.embed.swing.SwingFXUtils;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static com.jjdx.lifegame.Plugins.Util.*;
 
@@ -186,8 +182,8 @@ public class MainFrame extends Application {
             for (int[] p : poss) bw.write((p[0] - minI) + " " + (p[1] - minJ) + " ");
             bw.write("\n");
             bw.close();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
