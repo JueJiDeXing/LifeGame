@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="LifeGame:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/LifeGame_jar</output-path>
+    <root id="archive" name="LifeGame.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="LifeGame" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/openjfx/javafx-graphics/17.0.6/javafx-graphics-17.0.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/openjfx/javafx-graphics/17.0.6/javafx-graphics-17.0.6-win.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/openjfx/javafx-base/17.0.6/javafx-base-17.0.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/openjfx/javafx-controls/17.0.6/javafx-controls-17.0.6-win.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/openjfx/javafx-fxml/17.0.6/javafx-fxml-17.0.6-win.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/openjfx/javafx-fxml/17.0.6/javafx-fxml-17.0.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/projectlombok/lombok/1.18.28/lombok-1.18.28.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/yaml/snakeyaml/2.2/snakeyaml-2.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/openjfx/javafx-controls/17.0.6/javafx-controls-17.0.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/apache-maven-3.9.4/_mavenRepo/org/openjfx/javafx-base/17.0.6/javafx-base-17.0.6-win.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

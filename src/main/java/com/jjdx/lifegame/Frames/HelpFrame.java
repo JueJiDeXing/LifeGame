@@ -1,12 +1,15 @@
 package com.jjdx.lifegame.Frames;
 
+import com.jjdx.lifegame.Plugins.Config;
 import com.jjdx.lifegame.Plugins.Creator;
 import com.jjdx.lifegame.Plugins.Loader;
 import com.jjdx.lifegame.Plugins.Structure;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -15,8 +18,13 @@ import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import net.sf.image4j.codec.ico.*;
 
 /**
  游戏帮助
@@ -39,13 +47,22 @@ public class HelpFrame {
 
     Pane pane;
     Stage window;
+    int width = Config.getInt("HelpFrame.width"), height = Config.getInt("HelpFrame.height");
 
     private void initFrame() {
         window = new Stage();
         pane = new Pane();
-        Scene newScene = new Scene(pane, 900, 800);
-        Image icon = new Image(Loader.findFilePath("mylife.png"));
-        window.getIcons().add(icon);
+        Scene newScene = new Scene(pane, width, height);
+        try {
+            String filePath = Loader.findFilePath(Config.getString("HelpFrame.icon"));
+            if (filePath == null) {
+                throw new RuntimeException("找不到图标文件, config加载:" + Config.getString("iconName"));
+            }
+            WritableImage icon = SwingFXUtils.toFXImage(ICODecoder.read(new File(filePath)).get(0), null);
+            window.getIcons().add(icon);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         window.setTitle("帮助");
         window.setScene(newScene);
         window.show();
@@ -54,21 +71,13 @@ public class HelpFrame {
 
 
     List<Label> bar = new ArrayList<>();
+    boolean isShowMain = true;
 
     /**
      初始化List<Label> bar
      */
     private void initBar() {
-        List<Pair<String, EventHandler<MouseEvent>>> list = List.of(
-                new Pair<>("帮助", e -> showMain()),
-                new Pair<>("静物", e -> showStruct(Structure.still)),
-                new Pair<>("震荡器", e -> showStruct(Structure.oscillator)),
-                new Pair<>("滑翔机", e -> showStruct(Structure.fly)),
-                new Pair<>("繁殖者", e -> showStruct(Structure.reproduction)),
-                new Pair<>("寿星", e -> showStruct(Structure.longLife)),
-                new Pair<>("图形未加载,点击刷新", e -> reload()),
-                new Pair<>("----测试按钮----", null)
-        );
+        List<Pair<String, EventHandler<MouseEvent>>> list = Arrays.asList(new Pair<>("帮助", e -> showMain()), new Pair<>("静物", e -> showStruct(Structure.still)), new Pair<>("震荡器", e -> showStruct(Structure.oscillator)), new Pair<>("滑翔机", e -> showStruct(Structure.fly)), new Pair<>("繁殖者", e -> showStruct(Structure.reproduction)), new Pair<>("寿星", e -> showStruct(Structure.longLife)), new Pair<>("图形未加载,点击刷新", e -> reloadAndFlush()));
         int itemPreWidth = 100, itemPreHeight = 50, itemX = 0, itemY = 0;// 横向排列按钮
         for (var s : list) {
             String name = s.getKey();
@@ -94,18 +103,21 @@ public class HelpFrame {
     }
 
     /**
-     重新加载图形
+     重新加载图形,并刷新
      */
-    private void reload() {
+    private void reloadAndFlush() {
         Structure.reload();
+        if (!isShowMain) showStruct(graphs);
     }
 
     /**
      主界面展示
      */
     private void showMain() {
-        pane.setStyle("-fx-background-color: #ffffff");
+        isShowMain = true;
         pane.getChildren().clear();
+
+        pane.setStyle("-fx-background-color: " + Config.getString("HelpFrame.mainBackgroundColor"));
         addBar();
         String info = Loader.readFile(Loader.findFilePath("info.txt"));
         TextFlow textFlow = new TextFlow();
@@ -113,9 +125,9 @@ public class HelpFrame {
             // 创建Text对象
             Text text = new Text(line + "\n");
             if (line.startsWith("①") || line.startsWith("②") || line.startsWith("③")) {
-                text.setFont(Font.font("FangSong", FontWeight.BOLD, 20));
+                text.setFont(Font.font(Config.getString("font.name", null), FontWeight.BOLD, Config.getInt("font.size", 20)));
             } else {
-                text.setFont(Font.font("FangSong", 20));
+                text.setFont(Font.font(Config.getString("font.name", null), Config.getInt("font.size", 20)));
             }
             textFlow.getChildren().add(text);
         }
@@ -141,11 +153,13 @@ public class HelpFrame {
 
     /**
      展示一种图形
-     * @param structs [< 图像名, 位置信息 >...]
+
+     @param structs [< 图像名, 位置信息 >...]
      */
     private void showStruct(List<Pair<String, List<Pair<Integer, Integer>>>> structs) {
-        pane.setStyle("-fx-background-color: #129d4f");
         pane.getChildren().clear();
+        isShowMain = false;
+        pane.setStyle("-fx-background-color: " + Config.getString("HelpFrame.structBackgroundColor"));
         addBar();
 
         curPage = 1;
@@ -173,23 +187,24 @@ public class HelpFrame {
      */
     int curPage = 1, maxPage = 0;
 
-    /** 额外空出的方格,用于美观*/
+    /**
+     额外空出的方格,用于美观
+     */
     int extraBlock = 6;
 
     /**
      创建map区域
-     * @param bound 边界大小[最大行,最大列]
+
+     @param bound 边界大小[最大行,最大列]
      */
     private void createMap(int[] bound) {
         int row = bound[0] + extraBlock, col = bound[1] + extraBlock;
         map = new Rectangle[row][col];
 
-        double offsetX = (pane.getWidth() - col * (this.len + 1)) / 2,
-                offsetY = (pane.getHeight() - row * (this.len + 1)) / 2;
+        double offsetX = (pane.getWidth() - col * (this.len + 1)) / 2, offsetY = (pane.getHeight() - row * (this.len + 1)) / 2;
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
-                Rectangle rect = new Rectangle(
-                        offsetX + j * (this.len + 1), offsetY + i * (this.len + 1), this.len, this.len);
+                Rectangle rect = new Rectangle(offsetX + j * (this.len + 1), offsetY + i * (this.len + 1), this.len, this.len);
                 rect.setFill(deadColor);
                 map[i][j] = rect;
                 pane.getChildren().add(rect);
@@ -199,7 +214,8 @@ public class HelpFrame {
 
     /**
      绘制图像
-     * @param graph 要绘制的图像 < 图像名, 位置信息 >
+
+     @param graph 要绘制的图像 < 图像名, 位置信息 >
      */
     private void drawGraph(Pair<String, List<Pair<Integer, Integer>>> graph) {
         clearMap();

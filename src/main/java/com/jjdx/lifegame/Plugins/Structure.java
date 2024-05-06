@@ -9,10 +9,13 @@ import java.util.*;
 /**
  结构: [静物|震荡器|滑翔机|繁殖|长寿]
  <br>
+ TODO 此处代码有些冗余,需要重构
+ <br>
 
  @ Author: 绝迹的星 <br>
  @ Time: 2024/4/28 <br> */
 public class Structure {
+    private Structure(){}
     //名称,位置信息
     public static List<Pair<String, List<Pair<Integer, Integer>>>>
             still = new ArrayList<>(), oscillator = new ArrayList<>(),
@@ -25,7 +28,7 @@ public class Structure {
             reproductionRowMaxLen = null, reproductionColMaxLen = null,
             longLifeRowMaxLen = null, longLifeColMaxLen = null;
 
-    static List<String> types = new ArrayList<>(List.of("still", "oscillator", "fly", "reproduction", "longLife"));
+    static List<String> types = new ArrayList<>(Arrays.asList("still", "oscillator", "fly", "reproduction", "longLife"));
     static HashMap<String, String> typeNameToPath = new HashMap<>();
 
     static {

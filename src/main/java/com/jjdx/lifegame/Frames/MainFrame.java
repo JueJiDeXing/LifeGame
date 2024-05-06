@@ -1,16 +1,18 @@
 package com.jjdx.lifegame.Frames;
 
-import com.jjdx.lifegame.Plugins.*;
+import com.jjdx.lifegame.Plugins.Achievement;
+import com.jjdx.lifegame.Plugins.Config;
+import com.jjdx.lifegame.Plugins.Creator;
+import com.jjdx.lifegame.Plugins.Loader;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -20,9 +22,14 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import net.sf.image4j.codec.ico.ICODecoder;
+import javafx.embed.swing.SwingFXUtils;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 import static com.jjdx.lifegame.Plugins.Util.*;
@@ -34,8 +41,6 @@ import static com.jjdx.lifegame.Plugins.Util.*;
  @ Author: 绝迹的星 <br>
  @ Time: 2024/4/28 <br> */
 public class MainFrame extends Application {
-
-
     public static void main(String[] args) {
         launch();
     }
@@ -50,8 +55,7 @@ public class MainFrame extends Application {
     int liveCnt = 0;//存活数量
     boolean isStart = false;//是否为开始状态
     Label liveText;//存活数量显示
-    HelpFrame helpFrame = null;//帮助界面
-    int width = Config.getInt("window.width");
+    int width = Config.getInt("MainFrame.width"), height = Config.getInt("MainFrame.height");
 
     @Override
     public void start(Stage stage) {
@@ -67,23 +71,21 @@ public class MainFrame extends Application {
      */
     private void init(Stage stage) {
         primaryStage = stage;
-        Scene scene = new Scene(rootPane, width, 820);
-        rootPane.setStyle("-fx-background-color: #129d4f");
+        Scene scene = new Scene(rootPane, width, height);
+        rootPane.setStyle("-fx-background-color: " + Config.getString("MainFrame.backgroundColor"));
         stage.setTitle("生命游戏");
-        /*
-        Image icon=new Image("src\\main\\resources\\Images\\mylife.png");
-        Image icon=new Image("src/main/resources/Images/mylife.png");
-        Image icon=new Image("Images/mylife.png");
-        Image icon=new Image("Images\\mylife.png");
-        Image icon=new Image("resources\\Images\\mylife.png");
-        Image icon=new Image("resources/Images/mylife.png");
-        Image icon=new Image("main/resources/Images/mylife.png");
-        Image icon=new Image("main\\resources\\Images\\mylife.png");
-        */
-        Image icon = new Image(Loader.findFilePath("mylife.png"));// 因为相对路径我怎么写都报错找不到文件,所以暴力搜
-        stage.getIcons().add(icon);
         stage.setScene(scene);
         stage.show();
+        try {
+            String filePath = Loader.findFilePath(Config.getString("MainFrame.icon"));
+            if (filePath == null) {
+                throw new RuntimeException("找不到图标文件, config加载:" + Config.getString("iconName"));
+            }
+            WritableImage icon = SwingFXUtils.toFXImage(ICODecoder.read(new File(filePath)).get(0), null);
+            stage.getIcons().add(icon);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -130,22 +132,7 @@ public class MainFrame extends Application {
      添加按钮
      */
     private void addButton() {
-        List<Pair<String, EventHandler<MouseEvent>>> textWithMethod = List.of(
-                new Pair<>("开始/停止", e -> startOrStopGame()),
-                new Pair<>("执行一步", e -> runGame()),
-                new Pair<>("回退一步", e -> backGame()),
-                new Pair<>("清空图像", e -> clearMap()),
-                new Pair<>("平移图像", e -> moveMap()),
-                new Pair<>("玩法帮助", e -> getHelp()),
-                new Pair<>("速度×" + fact, this::changeSpeed),
-                new Pair<>("添加为静物", e -> printFile("still")),
-                new Pair<>("添加为震荡", e -> printFile("oscillator")),
-                new Pair<>("添加为飞行器", e -> printFile("fly")),
-                new Pair<>("添加为繁殖", e -> printFile("reproduction")),
-                new Pair<>("添加为寿星", e -> printFile("longLife")),
-                new Pair<>("保存到文件", e -> saveFile()),
-                new Pair<>("从文件加载", e -> loadFile())
-        );
+        List<Pair<String, EventHandler<MouseEvent>>> textWithMethod = Arrays.asList(new Pair<>("开始/停止", e -> startOrStopGame()), new Pair<>("执行一步", e -> runGame()), new Pair<>("回退一步", e -> backGame()), new Pair<>("清空图像", e -> clearMap()), new Pair<>("平移图像", e -> moveMap()), new Pair<>("玩法帮助", e -> getHelp()), new Pair<>("速度×" + fact, this::changeSpeed), new Pair<>("添加为静物", e -> printFile("still")), new Pair<>("添加为震荡", e -> printFile("oscillator")), new Pair<>("添加为飞行器", e -> printFile("fly")), new Pair<>("添加为繁殖", e -> printFile("reproduction")), new Pair<>("添加为寿星", e -> printFile("longLife")), new Pair<>("保存到文件", e -> saveFile()), new Pair<>("从文件加载", e -> loadFile()));
         for (var textAndFunc : textWithMethod) {
             String text = textAndFunc.getKey();
             int[] buttonPos = getButtonPos();
@@ -209,7 +196,7 @@ public class MainFrame extends Application {
         liveText = new Label("当前存活: " + liveCnt);
         liveText.setLayoutX(offsetX);
         liveText.setLayoutY(offsetY - 40);
-        liveText.setFont(new Font(20));
+        liveText.setFont(new Font(Config.getString("font.name"), Config.getInt("font.size", 20)));
         liveText.setTextFill(Color.WHITE);
         rootPane.getChildren().add(liveText);
     }
@@ -328,30 +315,32 @@ public class MainFrame extends Application {
     private void moveMap() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("输入");
-        alert.setHeaderText("请命名");
         //输入框
         TextField inputRow = new TextField(), inputCol = new TextField();
         inputRow.setPromptText("请输入平移行数");
         inputCol.setPromptText("请输入平移列数");
         HBox inputRowHBox = new HBox(inputRow, inputCol);
         alert.getDialogPane().setContent(inputRowHBox);
-
         //按钮
-        ButtonType okButton = new ButtonType("确定"), cancelButton = new ButtonType("取消");
-        alert.getButtonTypes().setAll(okButton, cancelButton);
-        alert.showAndWait().ifPresent(buttonType -> {
-            if (buttonType == okButton) {
-                moveMap(Integer.parseInt(inputRow.getText()), Integer.parseInt(inputCol.getText()));
+        ButtonType okButton = new ButtonType("确定", ButtonBar.ButtonData.OK_DONE);
+        alert.getButtonTypes().setAll(okButton);
+        Optional<ButtonType> buttonType = alert.showAndWait();
+        if (buttonType.isPresent() && buttonType.get() == okButton) {
+            if (inputRow.getText().isEmpty() || inputCol.getText().isEmpty()) return;
+            try {
+                int rowMove = Integer.parseInt(inputRow.getText()), colMove = Integer.parseInt(inputCol.getText());
+                moveMap(rowMove, colMove);
+            } catch (Exception ignored) {
+
             }
-        });
+        }
     }
 
     /**
      帮助弹窗
      */
     private void getHelp() {
-        helpFrame = HelpFrame.getInstance();
-        helpFrame.showWindow();
+        HelpFrame.getInstance().showWindow();
     }
 
     /**
@@ -359,7 +348,7 @@ public class MainFrame extends Application {
      */
     private void changeSpeed(MouseEvent e) {
         Label speed = (Label) e.getSource();
-        fact = 2 * fact % 31;
+        fact = 2 * fact % 31;// fact=32 -> fact=1
         speed.setText("速度×" + fact);
     }
 
@@ -376,8 +365,8 @@ public class MainFrame extends Application {
         input.setPromptText("请输入名称");
         alert.getDialogPane().setContent(input);
         //按钮
-        ButtonType okButton = new ButtonType("确定"), cancelButton = new ButtonType("取消");
-        alert.getButtonTypes().setAll(okButton, cancelButton);
+        ButtonType okButton = new ButtonType("确定");
+        alert.getButtonTypes().setAll(okButton);
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == okButton) write(input.getText(), Loader.findFilePath(fileName));
         });
@@ -394,6 +383,7 @@ public class MainFrame extends Application {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("文本文件(*.txt)", "*.txt"));
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file == null) return;
+        //写入
         write(file.getName(), file.getPath());
     }
 
@@ -407,10 +397,14 @@ public class MainFrame extends Application {
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file == null) return;
         try {
+            //读取
             BufferedReader br = new BufferedReader(new FileReader(file));
-            String[] info = br.readLine().split(" ");
+            String[] info = br.readLine().split(" ");//只有一行
             if (info.length % 2 != 1) {
-                throw new RuntimeException("错误文件,坐标数量不成对");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("错误文件,坐标数量不成对");
+                alert.showAndWait();
+                return;
             }
             clearMap();
             setLiveText(info.length / 2);
@@ -419,7 +413,7 @@ public class MainFrame extends Application {
                 map[r][c].setFill(liveColor);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }

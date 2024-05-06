@@ -1,9 +1,0 @@
-window:
-  width: 1400
-  height: 900
-board:
-  offsetX: 60
-  offsetY: 70
-  row: 45
-  col: 55
-  len: 15

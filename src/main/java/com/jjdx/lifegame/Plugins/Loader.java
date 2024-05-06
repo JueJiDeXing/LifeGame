@@ -4,10 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  加载器,可以用于查找文件路径、加载类信息等
@@ -18,6 +15,9 @@ import java.util.List;
 public class Loader {
     private static final String workDir = System.getProperty("user.dir");
     private static final HashMap<String, String> cache = new HashMap<>();
+
+    private Loader() {
+    }
 
     /**
      按文件名在项目中查找文件路径
@@ -118,37 +118,4 @@ public class Loader {
         }
     }
 
-    public static Class<?>[] getAllClasses() {
-        List<Class<?>> classList = new ArrayList<>();
-        try {
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            String packageName = "com.jjdx.lifegame";
-            String path = packageName.replace('.', '/');
-            Enumeration<URL> resources = classLoader.getResources(path);
-            while (resources.hasMoreElements()) {
-                URL resource = resources.nextElement();
-                File directory = new File(resource.getFile());
-                if (!directory.exists()) continue;
-                add(packageName, directory, classList);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return classList.toArray(new Class<?>[0]);
-    }
-
-    private static void add(String packageName, File directory, List<Class<?>> classList) throws ClassNotFoundException {
-        for (File file : directory.listFiles()) {
-            if (file.isDirectory()) {
-                add(packageName + "." + file.getName(), file, classList);
-            } else {
-                String name = file.getName();
-                if (name.endsWith(".class")) {
-                    String className = packageName + '.' + name.substring(0, name.length() - 6);
-                    Class<?> clazz = Class.forName(className);
-                    classList.add(clazz);
-                }
-            }
-        }
-    }
 }
