@@ -30,10 +30,6 @@ public class Structure {
             reproductionRowMaxLen = null, reproductionColMaxLen = null,
             longLifeRowMaxLen = null, longLifeColMaxLen = null;
 
-    static {
-        reload();
-    }
-
     /**
      重新加载图形
      */

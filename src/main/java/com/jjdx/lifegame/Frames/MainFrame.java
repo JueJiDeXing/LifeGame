@@ -1,9 +1,6 @@
 package com.jjdx.lifegame.Frames;
 
-import com.jjdx.lifegame.Plugins.Achievement;
-import com.jjdx.lifegame.Plugins.Config;
-import com.jjdx.lifegame.Plugins.Creator;
-import com.jjdx.lifegame.Plugins.Loader;
+import com.jjdx.lifegame.Plugins.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -27,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import static com.jjdx.lifegame.Plugins.Util.*;
 
@@ -41,53 +39,67 @@ public class MainFrame extends Application {
         launch();
     }
 
-    Pane rootPane = new Pane();
+    Pane rootPane;
     Stage primaryStage;
-    int offsetX = Config.getInt("board.offsetX"), offsetY = Config.getInt("board.offsetY");//方格的偏移量
-    public int row = Config.getInt("board.row"), col = Config.getInt("board.col"), len = Config.getInt("board.len");//方格的行列数和每块的边长
-    public Rectangle[][] map = new Rectangle[row][col];//方格
-    public Color liveColor = Color.WHITE, deadColor = Color.BLACK;//细胞的死活颜色
+    int offsetX, offsetY;//方格的偏移量
+    public int row, col, len;//方格的行列数和每块的边长
+    public Rectangle[][] map;//方格
+    public Color liveColor, deadColor;//细胞的死活颜色
     int fact = 1;//加速因子
     int liveCnt = 0;//存活数量
     boolean isStart = false;//是否为开始状态
     Label liveText;//存活数量显示
-    int width = Config.getInt("MainFrame.width"), height = Config.getInt("MainFrame.height");
+    int width, height;
 
     @Override
     public void start(Stage stage) {
-        init(stage);
-        addGrid();
-        setInitialSituation();
-        addButton();
-        addLiveText();
+        try {
+            AnimationFrame.animation(stage, () -> {
+                loadConfig();
+                Scene scene = new Scene((rootPane = new Pane()), width, height);
+                initStage(stage);
+                initGrid();
+                setInitialSituation();
+                initButton();
+                initLiveText();
+                return scene;
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadConfig() {
+        width = Config.get("MainFrame.width", 0);
+        height = Config.get("MainFrame.height", 0);
+        offsetX = Config.get("board.offsetX", 0);
+        offsetY = Config.get("board.offsetY", 0);//方格的偏移量
+        row = Config.get("board.row", 0);
+        col = Config.get("board.col", 0);
+        len = Config.get("board.len", 0);//方格的行列数和每块的边长
+        liveColor = Config.get("board.liveColor", Color.WHITE);
+        deadColor = Config.get("board.deadColor", Color.BLACK);
     }
 
     /**
      初始化界面信息
      */
-    private void init(Stage stage) {
+    private void initStage(Stage stage) {
         primaryStage = stage;
-        Scene scene = new Scene(rootPane, width, height);
         rootPane.setStyle("-fx-background-color: " + Config.getString("MainFrame.backgroundColor"));
         stage.setTitle("生命游戏");
-        stage.setScene(scene);
         try {
-            String filePath = Loader.findFilePath(Config.getString("MainFrame.icon"));
-            if (filePath == null) {
-                throw new RuntimeException("找不到图标文件, config加载:" + Config.getString("iconName"));
-            }
-            WritableImage icon = SwingFXUtils.toFXImage(ICODecoder.read(new File(filePath)).get(0), null);
-            stage.getIcons().add(icon);
+            stage.getIcons().add(ICON.getIcon("global.icon"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        stage.show();
     }
 
     /**
      添加网格
      */
-    private void addGrid() {
+    private void initGrid() {
+        map = new Rectangle[row][col];
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
                 Rectangle rect = new Rectangle(offsetX + j * (len + 1), offsetY + i * (len + 1), len, len);
@@ -117,8 +129,8 @@ public class MainFrame extends Application {
     int[] getButtonPos() {//按钮按列布局
         int y = buttonStartY + space * (spaceId++);
         if (y + buttonHeight + 50 > rootPane.getHeight()) {//双列
-            spaceId = 0;
             buttonStartX += 180;
+            spaceId = 0;
             return getButtonPos();
         }
         return new int[]{buttonStartX, y};
@@ -127,7 +139,7 @@ public class MainFrame extends Application {
     /**
      添加按钮
      */
-    private void addButton() {
+    private void initButton() {
         List<Pair<String, EventHandler<MouseEvent>>> textWithMethod = Arrays.asList(new Pair<>("开始/停止", e -> startOrStopGame()), new Pair<>("执行一步", e -> runGame()), new Pair<>("回退一步", e -> backGame()), new Pair<>("清空图像", e -> clearMap()), new Pair<>("平移图像", e -> moveMap()), new Pair<>("玩法帮助", e -> getHelp()), new Pair<>("速度×" + fact, this::changeSpeed), new Pair<>("添加为静物", e -> printFile("still")), new Pair<>("添加为震荡", e -> printFile("oscillator")), new Pair<>("添加为飞行器", e -> printFile("fly")), new Pair<>("添加为繁殖", e -> printFile("reproduction")), new Pair<>("添加为寿星", e -> printFile("longLife")), new Pair<>("保存到文件", e -> saveFile()), new Pair<>("从文件加载", e -> loadFile()));
         for (var textAndFunc : textWithMethod) {
             String text = textAndFunc.getKey();
@@ -188,7 +200,7 @@ public class MainFrame extends Application {
     }
 
 
-    private void addLiveText() {
+    private void initLiveText() {
         liveText = new Label("当前存活: " + liveCnt);
         liveText.setLayoutX(offsetX);
         liveText.setLayoutY(offsetY - 40);

@@ -18,6 +18,10 @@ public class Util {
         }
     }
 
+    public static <T, U> boolean isInstanceOf(T obj, Class<U> clazz) {
+        return clazz.isInstance(obj);//null->false
+    }
+
     public static int[][] eightDir = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
     static int[][] fourDir = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 

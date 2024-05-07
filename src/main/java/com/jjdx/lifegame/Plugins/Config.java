@@ -17,11 +17,12 @@ import org.yaml.snakeyaml.Yaml;
 public class Config {
 
     private static HashMap<String, Object> yMap;//从配置文件读取的信息
+    private static final HashMap<String, Object> cache = new HashMap<>();
 
     private Config() {
     }
 
-    static {
+    static void init() {
         try {
             yMap = new Yaml().load(Config.class.getClassLoader().getResourceAsStream("config.yml"));
         } catch (Exception e) {
@@ -39,6 +40,20 @@ public class Config {
         }
     }
 
+    public static <T> T get(String name, T defaultValue) {
+        if (yMap == null) init();
+        if (cache.containsKey(name)) return (T) cache.get(name);
+        Object value = split(name, defaultValue);
+        if (!Util.isInstanceOf(value, defaultValue.getClass())) {
+            cache.put(name, defaultValue);
+            return defaultValue;
+        }
+        T ans = (T) value;
+        cache.put(name, ans);
+        return ans;
+
+    }
+
     /**
      获取配置文件的值
 
@@ -46,25 +61,39 @@ public class Config {
      @return 值, 若不存在则返回默认值0
      */
     public static int getInt(String name) {
+        if (cache.containsKey(name)) return (int) cache.get(name);
         return getInt(name, 0);
     }
 
     public static int getInt(String name, int defaultVal) {
+        if (cache.containsKey(name)) return (int) cache.get(name);
         Object value = split(name, defaultVal);
-        if (value == null) return defaultVal;
-        if (value instanceof Integer) return (int) value;
-        return defaultVal;
+        if (!Util.isInstanceOf(value, Integer.class)) {
+            cache.put(name, defaultVal);
+            return defaultVal;
+        }
+        int ans = (int) value;
+        cache.put(name, ans);
+        return ans;
+
     }
 
     public static String getString(String name) {
+        if (cache.containsKey(name)) return (String) cache.get(name);
         return getString(name, "");
     }
 
     public static String getString(String name, String defaultVal) {
+        if (cache.containsKey(name)) return (String) cache.get(name);
         Object value = split(name, defaultVal);
-        if (value == null) return defaultVal;
-        if (value instanceof String) return (String) value;
-        return defaultVal;
+        if (!Util.isInstanceOf(value, String.class)) {
+            cache.put(name, defaultVal);
+            return defaultVal;
+        }
+        String ans = (String) value;
+        cache.put(name, ans);
+        return ans;
+
     }
 
     /**
@@ -84,5 +113,13 @@ public class Config {
             }
         }
         return m.get(split[n - 1]);
+    }
+
+    public static boolean getBoolean(String name) {
+        Object value = split(name, false);
+        if (!Util.isInstanceOf(value, Boolean.class)) {
+            return false;
+        }
+        return (boolean) value;
     }
 }

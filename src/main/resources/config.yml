@@ -2,19 +2,23 @@ MainFrame:
   width: 1400
   height: 820
   backgroundColor: "#129d4f"
-  icon: "mylife.ico"
 board:
   offsetX: 60
   offsetY: 70
   row: 45
   col: 55
   len: 15
+  liveColor: Color.RED
+  deadColor: Color.BLACK
 HelpFrame:
   width: 900
   height: 800
   mainBackgroundColor: "#ffffff"
   structBackgroundColor: "#129d4f"
+global:
   icon: "mylife.ico"
 font:
   name: "FangSong"
   size: 20
+DEBUG: true
+

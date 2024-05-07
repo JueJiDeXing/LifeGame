@@ -1,9 +1,6 @@
 package com.jjdx.lifegame.Frames;
 
-import com.jjdx.lifegame.Plugins.Config;
-import com.jjdx.lifegame.Plugins.Creator;
-import com.jjdx.lifegame.Plugins.Loader;
-import com.jjdx.lifegame.Plugins.Structure;
+import com.jjdx.lifegame.Plugins.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -39,6 +36,7 @@ public class HelpFrame {
     private HelpFrame() {
         initFrame();
         showMain();
+        Structure.reload();
     }
 
     public static HelpFrame getInstance() {
@@ -54,12 +52,7 @@ public class HelpFrame {
         pane = new Pane();
         Scene newScene = new Scene(pane, width, height);
         try {
-            String filePath = Loader.findFilePath(Config.getString("HelpFrame.icon"));
-            if (filePath == null) {
-                throw new RuntimeException("找不到图标文件, config加载:" + Config.getString("iconName"));
-            }
-            WritableImage icon = SwingFXUtils.toFXImage(ICODecoder.read(new File(filePath)).get(0), null);
-            window.getIcons().add(icon);
+            window.getIcons().add(ICON.getIcon("global.icon"));
         } catch (Exception e) {
             e.printStackTrace();
         }
