@@ -110,15 +110,12 @@ public class MainFrame extends Application {
         String struct = Loader.readFile(Loader.findFilePath("InitialSituation.txt"));
         if (struct.isEmpty()) return;
         String[] split = struct.split(" ");
-        if (split.length % 2 != 0) {
-            throw new RuntimeException("初始化错误");
-        }
-        for (int i = 0; i < split.length; i += 2) {
+        for (int i = 0; i < split.length - 1; i += 2) {
             try {
                 int r = Integer.parseInt(split[i]), c = Integer.parseInt(split[i + 1]);
                 map[r][c].setFill(liveColor);
             } catch (Exception e) {
-                i--;
+                System.out.println("错误坐标:" + split[i] + " " + split[i + 1]);
             }
         }
         liveCnt += split.length / 2;

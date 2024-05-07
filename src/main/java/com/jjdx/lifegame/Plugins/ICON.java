@@ -4,9 +4,10 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.WritableImage;
 import net.sf.image4j.codec.ico.ICODecoder;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
 
 /**
  图标管理
@@ -26,7 +27,10 @@ public class ICON {
                     ", config.load=" + Config.getString(fileName) +
                     ", Loader.path=" + null);
         }
-        WritableImage ans = SwingFXUtils.toFXImage(ICODecoder.read(new File(filePath)).get(0), null);
+
+        BufferedImage icon = ICODecoder.read(new File(filePath)).get(0);
+
+        WritableImage ans = SwingFXUtils.toFXImage(icon, null);
         cache.put(fileName, ans);
         return ans;
     }
