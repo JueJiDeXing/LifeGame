@@ -15,10 +15,16 @@ HelpFrame:
   height: 800
   mainBackgroundColor: "#ffffff"
   structBackgroundColor: "#129d4f"
+AnimationFrame:
+  width: 1400
+  height: 820
+  opacity: 1.0 # 0.0 ~ 1.0, 注意小数点
+  backgroundColor: "transparent"
+  radius: 50
 global:
   icon: "mylife.ico"
 font:
   name: "FangSong"
   size: 20
 DEBUG: true
-
+timeout: 8

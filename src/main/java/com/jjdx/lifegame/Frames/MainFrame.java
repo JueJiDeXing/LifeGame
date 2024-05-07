@@ -49,20 +49,16 @@ public class MainFrame extends Application {
 
     @Override
     public void start(Stage stage) {
-        try {
-            AnimationFrame.animaion(stage, () -> {
-                loadConfig();
-                Scene scene = new Scene((rootPane = new Pane()), width, height);
-                initStage(stage);
-                initGrid();
-                setInitialSituation();
-                initButton();
-                initLiveText();
-                return scene;
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        AnimationFrame.animaion(stage, () -> {
+            loadConfig();
+            Scene scene = new Scene((rootPane = new Pane()), width, height);
+            initStage(stage);
+            initGrid();
+            setInitialSituation();
+            initButton();
+            initLiveText();
+            return scene;
+        });
     }
 
     private void loadConfig() {
@@ -113,10 +109,10 @@ public class MainFrame extends Application {
     private void setInitialSituation() {
         String struct = Loader.readFile(Loader.findFilePath("InitialSituation.txt"));
         if (struct.isEmpty()) return;
-        if (struct.length() % 2 != 0) {
-            throw new RuntimeException("InitialSituation.txt 格式错误");
-        }
         String[] split = struct.split(" ");
+        if (split.length % 2 != 0) {
+            throw new RuntimeException("初始化错误");
+        }
         for (int i = 0; i < split.length; i += 2) {
             try {
                 int r = Integer.parseInt(split[i]), c = Integer.parseInt(split[i + 1]);

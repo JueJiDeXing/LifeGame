@@ -1,7 +1,6 @@
 package com.jjdx.lifegame.Structure;
 
 import javafx.util.Pair;
-import lombok.Getter;
 
 import java.util.*;
 
@@ -12,7 +11,7 @@ import java.util.*;
  @ Author: 绝迹的星 <br>
  @ Time: 2024/5/7 <br> */
 public class Structure {
-    @Getter
+
     String name;//类名
     List<Pair<String, List<Pair<Integer, Integer>>>> struct = new ArrayList<>();//每个图形
     Integer rowMaxLen = null, colMaxLen = null;
@@ -66,5 +65,9 @@ public class Structure {
 
     public Pair<String, List<Pair<Integer, Integer>>> get(int index) {
         return struct.get(index);
+    }
+
+    public String getName() {
+        return name;
     }
 }

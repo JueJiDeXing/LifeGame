@@ -72,10 +72,12 @@ public class Loader {
                 if (line.equals("\n")) break;
                 sb.append(line).append("\n");
             }
+            sb.deleteCharAt(sb.length() - 1);//最后一个换行符不要
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return sb.toString();
     }
 

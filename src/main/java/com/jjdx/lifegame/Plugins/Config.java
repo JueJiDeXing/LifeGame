@@ -12,7 +12,10 @@ import javafx.scene.effect.Reflection;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- Yaml配置文件的读取器
+ Yaml配置文件的读取器, (需要在程序启动前加载信息)
+ <br>
+ @ Author: 绝迹的星 <br>
+ @ Time: 2024/5/7 <br>
  */
 public class Config {
 
@@ -22,7 +25,7 @@ public class Config {
     private Config() {
     }
 
-    static void init() {
+    static {
         try {
             yMap = new Yaml().load(Config.class.getClassLoader().getResourceAsStream("config.yml"));
         } catch (Exception e) {
@@ -41,7 +44,6 @@ public class Config {
     }
 
     public static <T> T get(String name, T defaultValue) {
-        if (yMap == null) init();
         if (cache.containsKey(name)) return (T) cache.get(name);
         Object value = split(name, defaultValue);
         if (!Util.isInstanceOf(value, defaultValue.getClass())) {
