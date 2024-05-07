@@ -1,16 +1,12 @@
 package com.jjdx.lifegame.Frames;
 
-import com.jjdx.lifegame.Plugins.Config;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -27,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
  @ Time: 2024/5/7 <br> */
 public class AnimationFrame {
 
-    public static void animation(Stage stage, Callable<Scene> sceneCallable) {
+    public static void animaion(Stage stage, Callable<Scene> sceneCallable) {
         CompletableFuture<Scene> future = CompletableFuture.supplyAsync(() -> {
             try {
                 return sceneCallable.call();//异步执行,拿到返回值 Scene mainFrame
@@ -64,6 +60,7 @@ public class AnimationFrame {
             Timeline waitLine = new Timeline();
             waitLine.getKeyFrames().add(new KeyFrame(Duration.seconds(0.5)));
             waitLine.setOnFinished(event -> future.thenAccept(mainFrame -> {//动画结束: 展示主窗口
+
                 stage.setScene(mainFrame);
                 stage.show();
                 animationFrame.close();

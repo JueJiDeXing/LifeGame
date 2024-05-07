@@ -11,4 +11,6 @@ module com.jjdx.lifegame {
     opens com.jjdx.lifegame.Frames to javafx.fxml;
     exports com.jjdx.lifegame.Plugins;
     opens com.jjdx.lifegame.Plugins to javafx.fxml;
+    exports com.jjdx.lifegame.Structure;
+    opens com.jjdx.lifegame.Structure to javafx.fxml;
 }

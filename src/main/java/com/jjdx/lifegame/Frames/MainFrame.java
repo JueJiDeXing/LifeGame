@@ -3,11 +3,9 @@ package com.jjdx.lifegame.Frames;
 import com.jjdx.lifegame.Plugins.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -17,14 +15,12 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import net.sf.image4j.codec.ico.ICODecoder;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 import static com.jjdx.lifegame.Plugins.Util.*;
 
@@ -47,14 +43,14 @@ public class MainFrame extends Application {
     public Color liveColor, deadColor;//细胞的死活颜色
     int fact = 1;//加速因子
     int liveCnt = 0;//存活数量
-    boolean isStart = false;//是否为开始状态
+    boolean isStart = false;//生命是否为运行状态
     Label liveText;//存活数量显示
     int width, height;
 
     @Override
     public void start(Stage stage) {
         try {
-            AnimationFrame.animation(stage, () -> {
+            AnimationFrame.animaion(stage, () -> {
                 loadConfig();
                 Scene scene = new Scene((rootPane = new Pane()), width, height);
                 initStage(stage);
@@ -115,10 +111,19 @@ public class MainFrame extends Application {
      设置初始态
      */
     private void setInitialSituation() {
-        String struct = "0 23 0 24 1 23 1 25 2 10 2 12 2 26 2 34 2 35 3 9 3 12 3 15 3 16 3 23 3 26 3 34 3 35 4 0 4 1 4 8 4 9 4 15 4 17 4 26 5 0 5 1 5 6 5 7 5 11 5 15 5 19 5 23 5 25 6 8 6 9 6 15 6 16 6 17 6 19 6 20 6 23 6 24 7 9 7 12 7 16 7 17 8 10 8 12";
+        String struct = Loader.readFile(Loader.findFilePath("InitialSituation.txt"));
+        if (struct.isEmpty()) return;
+        if (struct.length() % 2 != 0) {
+            throw new RuntimeException("InitialSituation.txt 格式错误");
+        }
         String[] split = struct.split(" ");
         for (int i = 0; i < split.length; i += 2) {
-            map[Integer.parseInt(split[i])][Integer.parseInt(split[i + 1])].setFill(liveColor);
+            try {
+                int r = Integer.parseInt(split[i]), c = Integer.parseInt(split[i + 1]);
+                map[r][c].setFill(liveColor);
+            } catch (Exception e) {
+                i--;
+            }
         }
         liveCnt += split.length / 2;
     }

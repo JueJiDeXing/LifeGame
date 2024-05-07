@@ -58,12 +58,18 @@ public class Loader {
         return null;
     }
 
+    /**
+     读取文件
+
+     @param file 文件路径
+     */
     public static String readFile(String file) {
         StringBuilder sb = new StringBuilder();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = reader.readLine()) != null) {
+                if (line.equals("\n")) break;
                 sb.append(line).append("\n");
             }
             reader.close();

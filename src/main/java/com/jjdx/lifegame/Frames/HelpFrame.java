@@ -1,12 +1,11 @@
 package com.jjdx.lifegame.Frames;
 
 import com.jjdx.lifegame.Plugins.*;
-import javafx.embed.swing.SwingFXUtils;
+import com.jjdx.lifegame.Structure.Structure;
+import com.jjdx.lifegame.Structure.StructureManger;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -15,13 +14,9 @@ import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import net.sf.image4j.codec.ico.*;
 
 /**
  游戏帮助
@@ -36,7 +31,6 @@ public class HelpFrame {
     private HelpFrame() {
         initFrame();
         showMain();
-        Structure.reload();
     }
 
     public static HelpFrame getInstance() {
@@ -70,7 +64,14 @@ public class HelpFrame {
      初始化List<Label> bar
      */
     private void initBar() {
-        List<Pair<String, EventHandler<MouseEvent>>> list = Arrays.asList(new Pair<>("帮助", e -> showMain()), new Pair<>("静物", e -> showStruct(Structure.still)), new Pair<>("震荡器", e -> showStruct(Structure.oscillator)), new Pair<>("滑翔机", e -> showStruct(Structure.fly)), new Pair<>("繁殖者", e -> showStruct(Structure.reproduction)), new Pair<>("寿星", e -> showStruct(Structure.longLife)), new Pair<>("图形未加载,点击刷新", e -> reloadAndFlush()));
+        List<Pair<String, EventHandler<MouseEvent>>> list = Arrays.asList(
+                new Pair<>("帮助", e -> showMain()),
+                new Pair<>("静物", e -> showStruct("still")), // 与resources文件名保持一致
+                new Pair<>("震荡器", e -> showStruct("oscillator")),
+                new Pair<>("滑翔机", e -> showStruct("fly")),
+                new Pair<>("繁殖者", e -> showStruct("reproduction")),
+                new Pair<>("寿星", e -> showStruct("longLife")),
+                new Pair<>("图形未加载,点击刷新", e -> reloadAndFlush()));
         int itemPreWidth = 100, itemPreHeight = 50, itemX = 0, itemY = 0;// 横向排列按钮
         for (var s : list) {
             String name = s.getKey();
@@ -99,8 +100,8 @@ public class HelpFrame {
      重新加载图形,并刷新
      */
     private void reloadAndFlush() {
-        Structure.reload();
-        if (!isShowMain) showStruct(graphs);
+        StructureManger.reloadAll();
+        if (!isShowMain) showStruct(graphs.getName());
     }
 
     /**
@@ -142,30 +143,32 @@ public class HelpFrame {
     /**
      当前展示的一种图形
      */
-    List<Pair<String, List<Pair<Integer, Integer>>>> graphs;
+    Structure graphs;
 
     /**
      展示一种图形
 
-     @param structs [< 图像名, 位置信息 >...]
+     @param structName 该类图像的名称[
      */
-    private void showStruct(List<Pair<String, List<Pair<Integer, Integer>>>> structs) {
+    private void showStruct(String structName) {
+        Structure structs = StructureManger.get(structName);
+        StructureManger.reload(structName);
         pane.getChildren().clear();
         isShowMain = false;
         pane.setStyle("-fx-background-color: " + Config.getString("HelpFrame.structBackgroundColor"));
         addBar();
 
         curPage = 1;
-        maxPage = structs.size();
+        maxPage = structs.getSize();
         addPage();
 
         if (structs.isEmpty()) return;
         graphs = structs;
-        Pair<String, List<Pair<Integer, Integer>>> first = graphs.get(0);
+        Pair<String, List<Pair<Integer, Integer>>> first = graphs.getFirst();
         setNameLabelText(first.getKey());
         pane.getChildren().add(nameLabel);
 
-        createMap(Structure.getMaxLen(structs));
+        createMap(structs.getMaxLen());
         drawGraph(first);
     }
 
