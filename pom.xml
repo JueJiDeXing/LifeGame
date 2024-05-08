@@ -16,11 +16,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.sf.image4j</groupId>
-            <artifactId>image4j</artifactId>
-            <version>0.7zensight1</version>
-        </dependency>
-        <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>2.2</version>
@@ -58,12 +53,7 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-        <!--    <groupId>org.projectlombok</groupId>-->
-        <!--    <artifactId>lombok</artifactId>-->
-        <!--    <version>1.18.28</version>-->
-        <!--    <scope>compile</scope>-->
-        <!--</dependency>-->
+
 
     </dependencies>
 
@@ -98,6 +88,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 </project>

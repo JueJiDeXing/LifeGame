@@ -2,10 +2,10 @@ module com.jjdx.lifegame {
     requires javafx.controls;
     requires javafx.fxml;
     requires org.yaml.snakeyaml;
-    requires image4j;
     requires java.desktop;
     requires javafx.swing;
     requires javafx.graphics;
+    requires java.logging;
 
     exports com.jjdx.lifegame.Frames;
     opens com.jjdx.lifegame.Frames to javafx.fxml;

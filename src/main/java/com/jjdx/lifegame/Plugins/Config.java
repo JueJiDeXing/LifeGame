@@ -14,12 +14,12 @@ import org.yaml.snakeyaml.Yaml;
 /**
  Yaml配置文件的读取器, (需要在程序启动前加载信息)
  <br>
+
  @ Author: 绝迹的星 <br>
- @ Time: 2024/5/7 <br>
- */
+ @ Time: 2024/5/7 <br> */
 public class Config {
 
-    private static HashMap<String, Object> yMap;//从配置文件读取的信息
+    private static final HashMap<String, Object> yMap;//从配置文件读取的信息
     private static final HashMap<String, Object> cache = new HashMap<>();
 
     private Config() {
@@ -29,17 +29,8 @@ public class Config {
         try {
             yMap = new Yaml().load(Config.class.getClassLoader().getResourceAsStream("config.yml"));
         } catch (Exception e) {
-            throw new RuntimeException(" error:未成功读取配置文件 ");
-        }
-    }
-
-    public static void setYML(String fileName) {
-        if (fileName == null) return;
-        if (!fileName.endsWith(".yml")) return;
-        try {
-            yMap = new Yaml().load(new FileInputStream(fileName));//默认
-        } catch (IOException e) {
-            e.printStackTrace();
+            MyLogger.warn(" error: 未成功读取配置文件 ");
+            throw new RuntimeException(" error: 未成功读取配置文件 ");
         }
     }
 

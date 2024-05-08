@@ -6,6 +6,7 @@ import com.jjdx.lifegame.Structure.StructureManger;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -46,9 +47,10 @@ public class HelpFrame {
         pane = new Pane();
         Scene newScene = new Scene(pane, width, height);
         try {
-            window.getIcons().add(ICON.getIcon("global.icon"));
+            WritableImage icon = ICONer.getIcon(Config.get("global.icon", ""));
+            window.getIcons().add(icon);
         } catch (Exception e) {
-            e.printStackTrace();
+            MyLogger.warn("HelpFrame - ICON获取出错");
         }
         window.setTitle("帮助");
         window.setScene(newScene);
@@ -113,7 +115,7 @@ public class HelpFrame {
 
         pane.setStyle("-fx-background-color: " + Config.getString("HelpFrame.mainBackgroundColor"));
         addBar();
-        String info = Loader.readFile(Loader.findFilePath("info.txt"));
+        String info = FileUtil.readFile(FileUtil.findFilePath("info.txt"));
         TextFlow textFlow = new TextFlow();
         for (String line : info.split("\n")) {
             // 创建Text对象

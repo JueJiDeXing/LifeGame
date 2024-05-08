@@ -1,7 +1,11 @@
 package com.jjdx.lifegame.Frames;
 
 import com.jjdx.lifegame.Plugins.Config;
-import javafx.animation.*;
+import com.jjdx.lifegame.Plugins.ICONer;
+import com.jjdx.lifegame.Plugins.MyLogger;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -22,13 +26,15 @@ import java.util.concurrent.CompletableFuture;
 public class AnimationFrame {
 
     public static void animaion(Stage stage, Callable<Scene> sceneCallable) {
+        MyLogger.info("AnimationFrame - start");
         CompletableFuture<Scene> future = CompletableFuture.supplyAsync(() -> {
             try {
                 return sceneCallable.call();//异步执行,拿到返回值 Scene mainFrame
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                MyLogger.warn("CompletableFuture - 主窗口加载失败");
+                System.exit(-1);
             }
+            return null;
         });
         // 动画界面
         Stage animationFrame = new Stage(StageStyle.TRANSPARENT);
@@ -38,7 +44,7 @@ public class AnimationFrame {
         int paneWidth = Config.get("AnimationFrame.width", 1400), paneHeight = Config.get("AnimationFrame.height", 820);
         Scene animation = new Scene(root, paneWidth, paneHeight, Color.TRANSPARENT);
         animation.setFill(null);
-        ImageView circle = new ImageView("file:src/main/resources/images/mylife.png");
+        ImageView circle = new ImageView(ICONer.getIcon(Config.get("global.icon", "")));
         int r = Config.get("AnimationFrame.radius", 50);
         circle.setFitWidth(r);
         circle.setFitHeight(r);
@@ -56,29 +62,31 @@ public class AnimationFrame {
                 new KeyValue(circle.fitHeightProperty(), 300 - r)
         ));
         timeline.setOnFinished(e -> {//动画2:等待
+            MyLogger.info("AnimationFrame - 动画1完毕");
             Timeline waitLine = new Timeline();
             waitLine.getKeyFrames().add(new KeyFrame(Duration.seconds(0.4)));
             waitLine.setOnFinished(event -> {
+                MyLogger.info("AnimationFrame - 动画2完毕");
                 //等待主窗口加载完
                 long time = System.currentTimeMillis();
                 while (!future.isDone()) {
                     if (System.currentTimeMillis() - time > Config.get("timeout", 8) * 1000) {
                         //打印错误日志
-                        System.err.println("等待主窗口加载超时");
+                        MyLogger.warn("AnimationFrame - 主窗口加载超时");
                         throw new RuntimeException("等待主窗口加载超时");
                     }
                 }
                 future.thenAccept(mainFrame -> {//动画结束: 展示主窗口
+                    MyLogger.info("AnimationFrame - 加载完毕,展示主窗口");
+                    animationFrame.close();
                     stage.setScene(mainFrame);
                     stage.show();
-                    animationFrame.close();
                 });
             });
             waitLine.play();
         });
         animationFrame.show();
         timeline.play();
-
-
+        MyLogger.info("AnimationFrame - 开始播放动画");
     }
 }

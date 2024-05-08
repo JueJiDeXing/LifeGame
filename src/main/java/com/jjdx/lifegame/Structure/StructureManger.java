@@ -1,6 +1,6 @@
 package com.jjdx.lifegame.Structure;
 
-import com.jjdx.lifegame.Plugins.Loader;
+import com.jjdx.lifegame.Plugins.FileUtil;
 import javafx.util.Pair;
 
 import java.io.BufferedReader;
@@ -52,7 +52,7 @@ public class StructureManger {
      */
     static void load(List<Pair<String, List<Pair<Integer, Integer>>>> structs, String type) {
         try {
-            String filePath = Loader.findFilePath(type + ".txt");
+            String filePath = FileUtil.findFilePath(type + ".txt");
             BufferedReader br = new BufferedReader(new FileReader(filePath));
             br.lines().forEach(line -> {
                 String[] split = line.split(" ");

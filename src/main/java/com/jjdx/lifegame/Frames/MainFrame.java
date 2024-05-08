@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -17,10 +18,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.jjdx.lifegame.Plugins.Util.*;
 
@@ -32,6 +30,7 @@ import static com.jjdx.lifegame.Plugins.Util.*;
  @ Time: 2024/4/28 <br> */
 public class MainFrame extends Application {
     public static void main(String[] args) {
+        MyLogger.info(new Date() + " -- 开始运行");
         launch();
     }
 
@@ -49,14 +48,19 @@ public class MainFrame extends Application {
 
     @Override
     public void start(Stage stage) {
+        MyLogger.info("MainFrame - start");
+
         AnimationFrame.animaion(stage, () -> {
             loadConfig();
+            MyLogger.info("MainFrame - loadConfig");
             Scene scene = new Scene((rootPane = new Pane()), width, height);
             initStage(stage);
+            MyLogger.info("MainFrame - initStage");
             initGrid();
             setInitialSituation();
             initButton();
             initLiveText();
+            MyLogger.info("MainFrame - allInit");
             return scene;
         });
     }
@@ -80,10 +84,14 @@ public class MainFrame extends Application {
         primaryStage = stage;
         rootPane.setStyle("-fx-background-color: " + Config.getString("MainFrame.backgroundColor"));
         stage.setTitle("生命游戏");
+        MyLogger.info("MainFrame - setTitle");
         try {
-            stage.getIcons().add(ICON.getIcon("global.icon"));
+            WritableImage icon = ICONer.getIcon(Config.get("global.icon", ""));
+            MyLogger.info("MainFrame - getIcon");
+            stage.getIcons().add(icon);
+            MyLogger.info("MainFrame - addIcon");
         } catch (Exception e) {
-            e.printStackTrace();
+            MyLogger.warn("MainFrame - 图标获取出错  Config.get=" + Config.get("global.icon", ""));
         }
     }
 
@@ -107,7 +115,7 @@ public class MainFrame extends Application {
      设置初始态
      */
     private void setInitialSituation() {
-        String struct = Loader.readFile(Loader.findFilePath("InitialSituation.txt"));
+        String struct = FileUtil.readFile(FileUtil.findFilePath("InitialSituation.txt"));
         if (struct.isEmpty()) return;
         String[] split = struct.split(" ");
         for (int i = 0; i < split.length - 1; i += 2) {
@@ -115,7 +123,7 @@ public class MainFrame extends Application {
                 int r = Integer.parseInt(split[i]), c = Integer.parseInt(split[i + 1]);
                 map[r][c].setFill(liveColor);
             } catch (Exception e) {
-                System.out.println("错误坐标:" + split[i] + " " + split[i + 1]);
+                MyLogger.info("错误坐标:" + split[i] + " " + split[i + 1]);
             }
         }
         liveCnt += split.length / 2;
@@ -174,27 +182,21 @@ public class MainFrame extends Application {
     /**
      将图像数据保存到文件
      */
-    void write(String name, String fileName) {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(fileName, true));
-            bw.write(name + " ");
-            List<int[]> poss = new ArrayList<>();
-            int minI = Integer.MAX_VALUE, minJ = Integer.MAX_VALUE;
-            for (int i = 0; i < row; i++) {
-                for (int j = 0; j < col; j++) {
-                    if (isLive(i, j)) {
-                        poss.add(new int[]{i, j});
-                        minI = Math.min(minI, i);
-                        minJ = Math.min(minJ, j);
-                    }
-                }
+    void write(String name, String filePath) {
+        StringBuilder text = new StringBuilder();
+        text.append(name).append(" ");
+        List<int[]> poss = new ArrayList<>();
+        int minI = Integer.MAX_VALUE, minJ = Integer.MAX_VALUE;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (!isLive(i, j)) continue;
+                poss.add(new int[]{i, j});
+                minI = Math.min(minI, i);
+                minJ = Math.min(minJ, j);
             }
-            for (int[] p : poss) bw.write((p[0] - minI) + " " + (p[1] - minJ) + " ");
-            bw.write("\n");
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        for (int[] p : poss) text.append((p[0] - minI)).append(" ").append(p[1] - minJ).append(" ");
+        FileUtil.writeFile(filePath, text.toString());
     }
 
 
@@ -374,7 +376,7 @@ public class MainFrame extends Application {
         ButtonType okButton = new ButtonType("确定");
         alert.getButtonTypes().setAll(okButton);
         alert.showAndWait().ifPresent(buttonType -> {
-            if (buttonType == okButton) write(input.getText(), Loader.findFilePath(fileName));
+            if (buttonType == okButton) write(input.getText(), FileUtil.findFilePath(fileName));
         });
 
     }
