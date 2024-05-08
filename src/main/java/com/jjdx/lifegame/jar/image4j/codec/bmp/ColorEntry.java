@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package com.jjdx.lifegame.jar.image4j.codec.bmp;
 
 import com.jjdx.lifegame.jar.image4j.io.LittleEndianInputStream;
@@ -22,12 +17,6 @@ public class ColorEntry {
         this.bReserved = var1.readUnsignedByte();
     }
 
-    public ColorEntry() {
-        this.bBlue = 0;
-        this.bGreen = 0;
-        this.bRed = 0;
-        this.bReserved = 0;
-    }
 
     public ColorEntry(int var1, int var2, int var3, int var4) {
         this.bBlue = var3;

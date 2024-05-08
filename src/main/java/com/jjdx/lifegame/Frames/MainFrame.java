@@ -17,7 +17,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.jjdx.lifegame.Plugins.Util.*;
@@ -30,7 +33,7 @@ import static com.jjdx.lifegame.Plugins.Util.*;
  @ Time: 2024/4/28 <br> */
 public class MainFrame extends Application {
     public static void main(String[] args) {
-        MyLogger.info(new Date() + " -- 开始运行");
+        MyLogger.info(new SimpleDateFormat("M月d日 E HH:mm").format(new Date()) + " -- 开始运行");
         launch();
     }
 
@@ -48,19 +51,17 @@ public class MainFrame extends Application {
 
     @Override
     public void start(Stage stage) {
-        MyLogger.info("MainFrame - start");
-
         AnimationFrame.animaion(stage, () -> {
             loadConfig();
-            MyLogger.info("MainFrame - loadConfig");
+            MyLogger.fine("主窗口已读入配置信息");
             Scene scene = new Scene((rootPane = new Pane()), width, height);
             initStage(stage);
-            MyLogger.info("MainFrame - initStage");
+            MyLogger.fine("stage初始化完毕");
             initGrid();
             setInitialSituation();
             initButton();
             initLiveText();
-            MyLogger.info("MainFrame - allInit");
+            MyLogger.fine("主窗口初始化完毕");
             return scene;
         });
     }
@@ -84,14 +85,14 @@ public class MainFrame extends Application {
         primaryStage = stage;
         rootPane.setStyle("-fx-background-color: " + Config.getString("MainFrame.backgroundColor"));
         stage.setTitle("生命游戏");
-        MyLogger.info("MainFrame - setTitle");
+        stage.setOnCloseRequest(event -> {
+            MyLogger.off(new SimpleDateFormat("M月d日 E HH:mm").format(new Date()) + " -- 主窗口已关闭");
+        });
         try {
             WritableImage icon = ICONer.getIcon(Config.get("global.icon", ""));
-            MyLogger.info("MainFrame - getIcon");
             stage.getIcons().add(icon);
-            MyLogger.info("MainFrame - addIcon");
         } catch (Exception e) {
-            MyLogger.warn("MainFrame - 图标获取出错  Config.get=" + Config.get("global.icon", ""));
+            MyLogger.warning("MainFrame#initStage - 图标获取出错  Config.get=" + Config.get("global.icon", ""));
         }
     }
 
@@ -123,7 +124,7 @@ public class MainFrame extends Application {
                 int r = Integer.parseInt(split[i]), c = Integer.parseInt(split[i + 1]);
                 map[r][c].setFill(liveColor);
             } catch (Exception e) {
-                MyLogger.info("错误坐标:" + split[i] + " " + split[i + 1]);
+                MyLogger.fine("错误坐标:" + split[i] + " " + split[i + 1]);
             }
         }
         liveCnt += split.length / 2;
@@ -407,7 +408,7 @@ public class MainFrame extends Application {
         try {
             //读取
             BufferedReader br = new BufferedReader(new FileReader(file));
-            String[] info = br.readLine().split(" ");//只有一行
+            String[] info = br.readLine().split(" ");//只有一行 [name , ...pos]
             if (info.length % 2 != 1) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("错误文件,坐标数量不成对");
@@ -421,7 +422,7 @@ public class MainFrame extends Application {
                 map[r][c].setFill(liveColor);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            MyLogger.warning("图像文件读取失败:" + e.getMessage());
         }
     }
 }

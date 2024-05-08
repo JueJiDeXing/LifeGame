@@ -6,29 +6,25 @@ import com.jjdx.lifegame.jar.image4j.io.LittleEndianInputStream;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class BMPDecoder {
-    private BufferedImage img;
-    private InfoHeader infoHeader;
 
     public BMPDecoder(InputStream var1) throws IOException {
         LittleEndianInputStream var2 = new LittleEndianInputStream(new CountingInputStream(var1));
         byte[] var3 = new byte[2];
         var2.read(var3);
-        String var4 = new String(var3, "UTF-8");
+        String var4 = new String(var3, StandardCharsets.UTF_8);
         if (!var4.equals("BM")) {
             throw new IOException("Invalid signature '" + var4 + "' for BMP format");
         } else {
-            int var5 = var2.readIntLE();
-            int var6 = var2.readIntLE();
-            int var7 = var2.readIntLE();
-            this.infoHeader = readInfoHeader(var2);
-            this.img = read(this.infoHeader, var2);
+            var2.readIntLE();
+            var2.readIntLE();
+            var2.readIntLE();
+            InfoHeader infoHeader = readInfoHeader(var2);
+            BufferedImage img = read(infoHeader, var2);
         }
     }
 
@@ -40,46 +36,36 @@ public class BMPDecoder {
         return var0 >> 4 * (1 - var1) & 15;
     }
 
-    public InfoHeader getInfoHeader() {
-        return this.infoHeader;
-    }
-
-    public BufferedImage getBufferedImage() {
-        return this.img;
-    }
 
     private static void getColorTable(ColorEntry[] var0, byte[] var1, byte[] var2, byte[] var3) {
-        for(int var4 = 0; var4 < var0.length; ++var4) {
-            var1[var4] = (byte)var0[var4].bRed;
-            var2[var4] = (byte)var0[var4].bGreen;
-            var3[var4] = (byte)var0[var4].bBlue;
+        for (int var4 = 0; var4 < var0.length; ++var4) {
+            var1[var4] = (byte) var0[var4].bRed;
+            var2[var4] = (byte) var0[var4].bGreen;
+            var3[var4] = (byte) var0[var4].bBlue;
         }
 
     }
 
     public static InfoHeader readInfoHeader(LittleEndianInputStream var0) throws IOException {
-        InfoHeader var1 = new InfoHeader(var0);
-        return var1;
+        return new InfoHeader(var0);
     }
 
     public static InfoHeader readInfoHeader(LittleEndianInputStream var0, int var1) throws IOException {
-        InfoHeader var2 = new InfoHeader(var0, var1);
-        return var2;
+        return new InfoHeader(var0, var1);
     }
 
     public static BufferedImage read(InfoHeader var0, LittleEndianInputStream var1) throws IOException {
-        BufferedImage var2 = null;
+        BufferedImage var2;
         ColorEntry[] var3 = null;
         if (var0.sBitCount <= 8) {
             var3 = readColorTable(var0, var1);
         }
-
         var2 = read(var0, var1, var3);
         return var2;
     }
 
     public static BufferedImage read(InfoHeader var0, LittleEndianInputStream var1, ColorEntry[] var2) throws IOException {
-        BufferedImage var3 = null;
+        BufferedImage var3;
         if (var0.sBitCount == 1 && var0.iCompression == 0) {
             var3 = read1(var0, var1, var2);
         } else if (var0.sBitCount == 4 && var0.iCompression == 0) {
@@ -102,7 +88,7 @@ public class BMPDecoder {
     public static ColorEntry[] readColorTable(InfoHeader var0, LittleEndianInputStream var1) throws IOException {
         ColorEntry[] var2 = new ColorEntry[var0.iNumColors];
 
-        for(int var3 = 0; var3 < var0.iNumColors; ++var3) {
+        for (int var3 = 0; var3 < var0.iNumColors; ++var3) {
             ColorEntry var4 = new ColorEntry(var1);
             var2[var3] = var4;
         }
@@ -125,17 +111,16 @@ public class BMPDecoder {
         }
 
         int var11 = var10 - var9;
-        int var12 = var11 / 8;
         int var13 = var10 / 8;
         int[] var14 = new int[var13];
 
-        for(int var15 = var0.iHeight - 1; var15 >= 0; --var15) {
+        for (int var15 = var0.iHeight - 1; var15 >= 0; --var15) {
             int var16;
-            for(var16 = 0; var16 < var13; ++var16) {
+            for (var16 = 0; var16 < var13; ++var16) {
                 var14[var16] = var1.readUnsignedByte();
             }
 
-            for(var16 = 0; var16 < var0.iWidth; ++var16) {
+            for (var16 = 0; var16 < var0.iWidth; ++var16) {
                 int var17 = var16 / 8;
                 int var18 = var14[var17];
                 int var19 = var16 % 8;
@@ -163,15 +148,15 @@ public class BMPDecoder {
         int var10 = var9 / 8;
         int[] var11 = new int[var10];
 
-        for(int var12 = var0.iHeight - 1; var12 >= 0; --var12) {
+        for (int var12 = var0.iHeight - 1; var12 >= 0; --var12) {
             int var13;
             int var14;
-            for(var13 = 0; var13 < var10; ++var13) {
+            for (var13 = 0; var13 < var10; ++var13) {
                 var14 = var1.readUnsignedByte();
                 var11[var13] = var14;
             }
 
-            for(var13 = 0; var13 < var0.iWidth; ++var13) {
+            for (var13 = 0; var13 < var0.iWidth; ++var13) {
                 var14 = var13 / 2;
                 int var15 = var13 % 2;
                 int var16 = var11[var14];
@@ -199,13 +184,13 @@ public class BMPDecoder {
 
         int var11 = var10 - var9;
 
-        for(int var12 = var0.iHeight - 1; var12 >= 0; --var12) {
-            for(int var13 = 0; var13 < var0.iWidth; ++var13) {
+        for (int var12 = var0.iHeight - 1; var12 >= 0; --var12) {
+            for (int var13 = 0; var13 < var0.iWidth; ++var13) {
                 int var14 = var1.readUnsignedByte();
                 var8.setSample(var13, var12, 0, var14);
             }
 
-            var1.skip((long)var11);
+            var1.skip(var11);
         }
 
         return var7;
@@ -222,8 +207,8 @@ public class BMPDecoder {
 
         int var6 = var5 - var4;
 
-        for(int var7 = var0.iHeight - 1; var7 >= 0; --var7) {
-            for(int var8 = 0; var8 < var0.iWidth; ++var8) {
+        for (int var7 = var0.iHeight - 1; var7 >= 0; --var7) {
+            for (int var8 = 0; var8 < var0.iWidth; ++var8) {
                 int var9 = var1.readUnsignedByte();
                 int var10 = var1.readUnsignedByte();
                 int var11 = var1.readUnsignedByte();
@@ -232,7 +217,7 @@ public class BMPDecoder {
                 var3.setSample(var8, var7, 2, var9);
             }
 
-            var1.skip((long)var6);
+            var1.skip(var6);
         }
 
         return var2;
@@ -243,8 +228,8 @@ public class BMPDecoder {
         WritableRaster var3 = var2.getRaster();
         WritableRaster var4 = var2.getAlphaRaster();
 
-        for(int var5 = var0.iHeight - 1; var5 >= 0; --var5) {
-            for(int var6 = 0; var6 < var0.iWidth; ++var6) {
+        for (int var5 = var0.iHeight - 1; var5 >= 0; --var5) {
+            for (int var6 = 0; var6 < var0.iWidth; ++var6) {
                 int var7 = var1.readUnsignedByte();
                 int var8 = var1.readUnsignedByte();
                 int var9 = var1.readUnsignedByte();
@@ -259,48 +244,4 @@ public class BMPDecoder {
         return var2;
     }
 
-    public static BufferedImage read(File var0) throws IOException {
-        FileInputStream var1 = new FileInputStream(var0);
-
-        BufferedImage var2;
-        try {
-            var2 = read((InputStream)(new BufferedInputStream(var1)));
-        } finally {
-            try {
-                var1.close();
-            } catch (IOException var9) {
-            }
-
-        }
-
-        return var2;
-    }
-
-    public static BufferedImage read(InputStream var0) throws IOException {
-        BMPDecoder var1 = new BMPDecoder(var0);
-        return var1.getBufferedImage();
-    }
-
-    public static BMPImage readExt(File var0) throws IOException {
-        FileInputStream var1 = new FileInputStream(var0);
-
-        BMPImage var2;
-        try {
-            var2 = readExt((InputStream)(new BufferedInputStream(var1)));
-        } finally {
-            try {
-                var1.close();
-            } catch (IOException var9) {
-            }
-
-        }
-
-        return var2;
-    }
-
-    public static BMPImage readExt(InputStream var0) throws IOException {
-        BMPDecoder var1 = new BMPDecoder(var0);
-        BMPImage var2 = new BMPImage(var1.getBufferedImage(), var1.getInfoHeader());
-        return var2;
-    }
 }

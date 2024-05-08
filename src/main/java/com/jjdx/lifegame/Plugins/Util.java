@@ -29,4 +29,8 @@ public class Util {
         return 0 <= x && x < n && 0 <= y && y < m;
     }
 
+    public static int max(int x, int... y) {
+        for (int t : y) x = Math.max(x, t);
+        return x;
+    }
 }

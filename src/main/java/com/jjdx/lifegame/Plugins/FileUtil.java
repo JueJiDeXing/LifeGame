@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
- 文件助理,可以用于查找文件路径、加载类信息等
+ 文件助理,可以用于查找文件路径、读写文件等
  <br>
 
  @ Author: 绝迹的星 <br>
@@ -105,7 +107,6 @@ public class FileUtil {
      */
     public static String findDirPath(String dirName) {
         if (cache.containsKey(dirName)) return cache.get(dirName);
-        //从workDir进行深度搜索,匹配文件名
         String res = dfs(workDir, dirName, false);
         cache.put(dirName, res);
         return res;

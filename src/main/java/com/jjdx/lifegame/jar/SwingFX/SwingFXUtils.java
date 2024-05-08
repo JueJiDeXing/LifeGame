@@ -5,21 +5,16 @@
 
 package com.jjdx.lifegame.jar.SwingFX;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
+import javafx.scene.image.Image;
+import javafx.scene.image.*;
+import javafx.scene.paint.Color;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.awt.image.ImageObserver;
 import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
 import java.nio.IntBuffer;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.image.WritablePixelFormat;
-import javafx.scene.paint.Color;
 
 public class SwingFXUtils {
     private SwingFXUtils() {
@@ -35,20 +30,20 @@ public class SwingFXUtils {
             default:
                 BufferedImage var4 = new BufferedImage(var2, var3, 3);
                 Graphics2D var5 = var4.createGraphics();
-                var5.drawImage(var0, 0, 0, (ImageObserver)null);
+                var5.drawImage(var0, 0, 0, null);
                 var5.dispose();
                 var0 = var4;
         }
 
         int[] var6;
         if (var1 != null) {
-            int var11 = (int)var1.getWidth();
-            int var13 = (int)var1.getHeight();
+            int var11 = (int) var1.getWidth();
+            int var13 = (int) var1.getHeight();
             if (var11 >= var2 && var13 >= var3) {
                 if (var2 < var11 || var3 < var13) {
                     var6 = new int[var11];
                     PixelWriter var7 = var1.getPixelWriter();
-                    WritablePixelFormat var8 = PixelFormat.getIntArgbPreInstance();
+                    WritablePixelFormat<IntBuffer> var8 = PixelFormat.getIntArgbPreInstance();
                     if (var2 < var11) {
                         var7.setPixels(var2, 0, var11 - var2, var3, var8, var6, 0, 0);
                     }
@@ -67,16 +62,16 @@ public class SwingFXUtils {
         }
 
         PixelWriter var12 = var1.getPixelWriter();
-        DataBufferInt var14 = (DataBufferInt)var0.getRaster().getDataBuffer();
+        DataBufferInt var14 = (DataBufferInt) var0.getRaster().getDataBuffer();
         var6 = var14.getData();
         int var15 = var0.getRaster().getDataBuffer().getOffset();
         int var16 = 0;
         SampleModel var9 = var0.getRaster().getSampleModel();
         if (var9 instanceof SinglePixelPackedSampleModel) {
-            var16 = ((SinglePixelPackedSampleModel)var9).getScanlineStride();
+            var16 = ((SinglePixelPackedSampleModel) var9).getScanlineStride();
         }
 
-        WritablePixelFormat var10 = var0.isAlphaPremultiplied() ? PixelFormat.getIntArgbPreInstance() : PixelFormat.getIntArgbInstance();
+        WritablePixelFormat<IntBuffer> var10 = var0.isAlphaPremultiplied() ? PixelFormat.getIntArgbPreInstance() : PixelFormat.getIntArgbInstance();
         var12.setPixels(0, 0, var2, var3, var10, var6, var15, var16);
         return var1;
     }
@@ -117,8 +112,8 @@ public class SwingFXUtils {
     }
 
     private static boolean checkFXImageOpaque(PixelReader var0, int var1, int var2) {
-        for(int var3 = 0; var3 < var1; ++var3) {
-            for(int var4 = 0; var4 < var2; ++var4) {
+        for (int var3 = 0; var3 < var1; ++var3) {
+            for (int var4 = 0; var4 < var2; ++var4) {
                 Color var5 = var0.getColor(var3, var4);
                 if (var5.getOpacity() != 1.0) {
                     return false;
@@ -134,8 +129,8 @@ public class SwingFXUtils {
         if (var2 == null) {
             return null;
         } else {
-            int var3 = (int)var0.getWidth();
-            int var4 = (int)var0.getHeight();
+            int var3 = (int) var0.getWidth();
+            int var4 = (int) var0.getHeight();
             PixelFormat var5 = var2.getPixelFormat();
             boolean var6 = false;
             switch (var5.getType()) {
@@ -171,16 +166,16 @@ public class SwingFXUtils {
                 var1 = new BufferedImage(var3, var4, var7);
             }
 
-            DataBufferInt var14 = (DataBufferInt)var1.getRaster().getDataBuffer();
+            DataBufferInt var14 = (DataBufferInt) var1.getRaster().getDataBuffer();
             int[] var15 = var14.getData();
             int var16 = var1.getRaster().getDataBuffer().getOffset();
             int var11 = 0;
             SampleModel var12 = var1.getRaster().getSampleModel();
             if (var12 instanceof SinglePixelPackedSampleModel) {
-                var11 = ((SinglePixelPackedSampleModel)var12).getScanlineStride();
+                var11 = ((SinglePixelPackedSampleModel) var12).getScanlineStride();
             }
 
-            WritablePixelFormat var13 = getAssociatedPixelFormat(var1);
+            WritablePixelFormat<IntBuffer> var13 = getAssociatedPixelFormat(var1);
             var2.getPixels(0, 0, var3, var4, var13, var15, var16, var11);
             return var1;
         }

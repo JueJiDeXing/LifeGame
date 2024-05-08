@@ -7,8 +7,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-import java.util.*;
-
 /**
  圆角按钮建造器
  <br>
@@ -31,7 +29,7 @@ public class Creator {
         label.setLayoutX(x);
         label.setLayoutY(y);
         label.setPrefSize(calPrefW(text, w), h);
-        label.setFont(Font.font(Config.getString("font.name",null), Config.getInt("font.size",20)));
+        label.setFont(Font.font(Config.getString("font.name", null), Config.getInt("font.size", 20)));
         label.setTextFill(Color.BLACK);
         label.setBackground(new Background(new BackgroundFill(
                 Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -49,7 +47,7 @@ public class Creator {
         label.setLayoutX(x);
         label.setLayoutY(y);
         label.setPrefSize(calPrefW(text, w), h);
-        label.setFont(Font.font(Config.getString("font.name",null), Config.getInt("font.size",20)));
+        label.setFont(Font.font(Config.getString("font.name", null), Config.getInt("font.size", 20)));
         label.setTextFill(Color.BLACK);
         label.setBackground(new Background(new BackgroundFill(
                 Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));

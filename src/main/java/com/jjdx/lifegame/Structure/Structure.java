@@ -2,7 +2,8 @@ package com.jjdx.lifegame.Structure;
 
 import javafx.util.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  一类图形

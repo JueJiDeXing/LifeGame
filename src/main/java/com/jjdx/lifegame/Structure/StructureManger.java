@@ -15,16 +15,13 @@ import java.util.*;
  @ Time: 2024/4/28 <br> */
 public class StructureManger {
     private StructureManger() {
-
     }
 
     static List<String> names = Arrays.asList("still", "oscillator", "fly", "reproduction", "longLife");// 与resources文件名保持一致
     static HashMap<String, Structure> structMap = new HashMap<>();
 
     static {
-        for (String s : names) {
-            structMap.put(s, new Structure(s));
-        }
+        for (String s : names) structMap.put(s, new Structure(s));
     }
 
     /**

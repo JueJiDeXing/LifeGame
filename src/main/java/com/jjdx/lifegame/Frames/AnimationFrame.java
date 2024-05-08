@@ -26,12 +26,11 @@ import java.util.concurrent.CompletableFuture;
 public class AnimationFrame {
 
     public static void animaion(Stage stage, Callable<Scene> sceneCallable) {
-        MyLogger.info("AnimationFrame - start");
         CompletableFuture<Scene> future = CompletableFuture.supplyAsync(() -> {
             try {
                 return sceneCallable.call();//异步执行,拿到返回值 Scene mainFrame
             } catch (Exception e) {
-                MyLogger.warn("CompletableFuture - 主窗口加载失败");
+                MyLogger.severe("主窗口加载失败, 程序退出");
                 System.exit(-1);
             }
             return null;
@@ -62,22 +61,22 @@ public class AnimationFrame {
                 new KeyValue(circle.fitHeightProperty(), 300 - r)
         ));
         timeline.setOnFinished(e -> {//动画2:等待
-            MyLogger.info("AnimationFrame - 动画1完毕");
+            MyLogger.fine("动画1结束");
             Timeline waitLine = new Timeline();
             waitLine.getKeyFrames().add(new KeyFrame(Duration.seconds(0.4)));
             waitLine.setOnFinished(event -> {
-                MyLogger.info("AnimationFrame - 动画2完毕");
+                MyLogger.fine("动画2结束");
                 //等待主窗口加载完
                 long time = System.currentTimeMillis();
                 while (!future.isDone()) {
                     if (System.currentTimeMillis() - time > Config.get("timeout", 8) * 1000) {
                         //打印错误日志
-                        MyLogger.warn("AnimationFrame - 主窗口加载超时");
-                        throw new RuntimeException("等待主窗口加载超时");
+                        MyLogger.severe("主窗口加载超时, 程序退出");
+                        System.exit(-1);
                     }
                 }
                 future.thenAccept(mainFrame -> {//动画结束: 展示主窗口
-                    MyLogger.info("AnimationFrame - 加载完毕,展示主窗口");
+                    MyLogger.fine("主窗口加载完成, 展示主窗口");
                     animationFrame.close();
                     stage.setScene(mainFrame);
                     stage.show();
@@ -87,6 +86,6 @@ public class AnimationFrame {
         });
         animationFrame.show();
         timeline.play();
-        MyLogger.info("AnimationFrame - 开始播放动画");
+        MyLogger.fine("动画开始");
     }
 }

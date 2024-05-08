@@ -50,7 +50,7 @@ public class HelpFrame {
             WritableImage icon = ICONer.getIcon(Config.get("global.icon", ""));
             window.getIcons().add(icon);
         } catch (Exception e) {
-            MyLogger.warn("HelpFrame - ICON获取出错");
+            MyLogger.warning("HelpFrame - ICON获取出错");
         }
         window.setTitle("帮助");
         window.setScene(newScene);

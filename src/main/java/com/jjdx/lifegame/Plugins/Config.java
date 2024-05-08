@@ -1,15 +1,8 @@
 package com.jjdx.lifegame.Plugins;
 
-import java.io.*;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Field;
-import java.util.*;
-
-import javafx.scene.effect.Reflection;
 import org.yaml.snakeyaml.Yaml;
+
+import java.util.HashMap;
 
 /**
  Yaml配置文件的读取器, (需要在程序启动前加载信息)
@@ -29,7 +22,7 @@ public class Config {
         try {
             yMap = new Yaml().load(Config.class.getClassLoader().getResourceAsStream("config.yml"));
         } catch (Exception e) {
-            MyLogger.warn(" error: 未成功读取配置文件 ");
+            MyLogger.severe(" 未成功读取配置文件 ");
             throw new RuntimeException(" error: 未成功读取配置文件 ");
         }
     }
