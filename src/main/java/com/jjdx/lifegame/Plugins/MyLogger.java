@@ -37,7 +37,7 @@ public class MyLogger {
     }
 
     private static void check() {
-        //检查文件"myLog.log"的大小
+        //检查文件的大小,超出最大限制则移除指定大小
         File file = new File(logFileName);
         long fileSize = file.length();
         if (fileSize < MaxSize) return;
