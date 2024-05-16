@@ -1,8 +1,8 @@
 package com.jjdx.lifegame.Frames;
 
-import com.jjdx.lifegame.Plugins.Config;
+import com.jjdx.lifegame.Utils.Config;
 import com.jjdx.lifegame.Plugins.ICONer;
-import com.jjdx.lifegame.Plugins.MyLogger;
+import com.jjdx.lifegame.Utils.MyLogger;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;

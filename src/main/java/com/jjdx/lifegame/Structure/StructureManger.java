@@ -1,6 +1,6 @@
 package com.jjdx.lifegame.Structure;
 
-import com.jjdx.lifegame.Plugins.FileUtil;
+import com.jjdx.lifegame.Utils.FileUtil;
 import javafx.util.Pair;
 
 import java.io.BufferedReader;

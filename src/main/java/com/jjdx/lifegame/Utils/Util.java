@@ -1,4 +1,4 @@
-package com.jjdx.lifegame.Plugins;
+package com.jjdx.lifegame.Utils;
 
 /**
  一些帮助方法

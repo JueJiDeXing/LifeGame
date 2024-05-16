@@ -1,14 +1,13 @@
 package com.jjdx.lifegame.Plugins;
 
-import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jjdx.lifegame.Plugins.Util.eightDir;
-import static com.jjdx.lifegame.Plugins.Util.isValid;
+import static com.jjdx.lifegame.Utils.Util.eightDir;
+import static com.jjdx.lifegame.Utils.Util.isValid;
 
 /**
  生命规则

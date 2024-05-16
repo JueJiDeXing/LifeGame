@@ -1,5 +1,7 @@
 package com.jjdx.lifegame.Plugins;
 
+import com.jjdx.lifegame.Utils.FileUtil;
+import com.jjdx.lifegame.Utils.MyLogger;
 import com.jjdx.lifegame.jar.SwingFX.SwingFXUtils;
 import com.jjdx.lifegame.jar.image4j.codec.ico.ICODecoder;
 import javafx.scene.image.WritableImage;

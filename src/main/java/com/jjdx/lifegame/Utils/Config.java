@@ -1,4 +1,4 @@
-package com.jjdx.lifegame.Plugins;
+package com.jjdx.lifegame.Utils;
 
 import org.yaml.snakeyaml.Yaml;
 

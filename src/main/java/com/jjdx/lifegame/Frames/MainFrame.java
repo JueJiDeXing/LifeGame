@@ -1,6 +1,9 @@
 package com.jjdx.lifegame.Frames;
 
 import com.jjdx.lifegame.Plugins.*;
+import com.jjdx.lifegame.Utils.Config;
+import com.jjdx.lifegame.Utils.FileUtil;
+import com.jjdx.lifegame.Utils.MyLogger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -8,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -23,8 +27,8 @@ import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.jjdx.lifegame.Plugins.Util.isValid;
-import static com.jjdx.lifegame.Plugins.Util.sleep;
+import static com.jjdx.lifegame.Utils.Util.isValid;
+import static com.jjdx.lifegame.Utils.Util.sleep;
 
 /**
  生命游戏主页面
@@ -40,16 +44,17 @@ public class MainFrame extends Application {
 
     Pane rootPane;
     Stage primaryStage;
+    int width, height;
+    int fact = 1;//加速因子
+    boolean isStart = false;//生命是否为运行状态
+
     int offsetX, offsetY;//方格的偏移量
     public int row, col, len;//方格的行列数和每块的边长
     public static Rectangle[][] map;//方格
     public static Color liveColor;
     public static Color deadColor;//细胞的死活颜色
-    int fact = 1;//加速因子
     static int liveCnt = 0;//存活数量
-    boolean isStart = false;//生命是否为运行状态
     static Label liveText;//存活数量显示
-    int width, height;
 
 
     @Override
@@ -87,6 +92,7 @@ public class MainFrame extends Application {
     private void initStage(Stage stage) {
         primaryStage = stage;
         rootPane.setStyle("-fx-background-color: " + Config.getString("MainFrame.backgroundColor"));
+        rootPane.setOnScroll(this::scale);
         stage.setTitle("生命游戏");
         stage.setOnCloseRequest(event -> {
             MyLogger.off(new SimpleDateFormat("M月d日 E HH:mm").format(new Date()) + " -- 主窗口已关闭");
@@ -423,6 +429,56 @@ public class MainFrame extends Application {
             }
         } catch (Exception e) {
             MyLogger.warning("图像文件读取失败:" + e.getMessage());
+        }
+    }
+
+    Tick scaleTick = new Tick();// 防抖
+
+    /**
+     缩放界面
+     */
+    private void scale(ScrollEvent e) {
+        if (scaleTick.distance() < 200) return;// 防抖
+        scaleTick.setNow();
+        double deltaY = e.getDeltaY();
+        if (deltaY > 0) {
+            if (len >= 50) return;
+            len++;
+        } else {
+            if (len <= 4) return;
+            len--;
+        }
+        System.out.println(len);
+        List<int[]> pos = removeMap();
+        col = 880 / (len + 1);
+        row = 720 / (len + 1);
+        scaleGrid(pos);
+    }
+
+    private List<int[]> removeMap() {
+        List<int[]> live = new ArrayList<>();
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                rootPane.getChildren().remove(map[i][j]);
+                if (isLive(i, j)) live.add(new int[]{i, j});
+            }
+        }
+        return live;
+    }
+
+    private void scaleGrid(List<int[]> pos) {
+        map = new Rectangle[row][col];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                Rectangle rect = new Rectangle(offsetX + j * (len + 1), offsetY + i * (len + 1), len, len);
+                rect.setFill(deadColor);
+                rect.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onClick);
+                rootPane.getChildren().add(rect);
+                map[i][j] = rect;
+            }
+        }
+        for (int[] p : pos) {
+            if (p[0] < row && p[1] < col) map[p[0]][p[1]].setFill(liveColor);
         }
     }
 }

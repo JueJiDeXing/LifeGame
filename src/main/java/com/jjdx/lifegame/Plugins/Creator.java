@@ -1,5 +1,6 @@
 package com.jjdx.lifegame.Plugins;
 
+import com.jjdx.lifegame.Utils.Config;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
