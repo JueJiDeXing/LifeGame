@@ -1,13 +1,15 @@
 package com.jjdx.lifegame.Frames;
 
-import com.jjdx.lifegame.Utils.Config;
 import com.jjdx.lifegame.Plugins.ICONer;
+import com.jjdx.lifegame.Utils.Config;
 import com.jjdx.lifegame.Utils.MyLogger;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -38,6 +40,11 @@ public class AnimationFrame {
         });
         // 动画界面
         Stage animationFrame = new Stage(StageStyle.TRANSPARENT);
+        animationFrame.addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                System.exit(0);
+            }
+        });
         Pane root = new Pane();
         root.setOpacity(Config.get("AnimationFrame.opacity", 1.0));
         root.setStyle("-fx-background-color: " + Config.get("AnimationFrame.backgroundColor", "transparent"));
