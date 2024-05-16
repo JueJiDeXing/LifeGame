@@ -1,6 +1,7 @@
 package com.jjdx.lifegame.Frames;
 
-import com.jjdx.lifegame.Plugins.*;
+import com.jjdx.lifegame.Plugins.Creator;
+import com.jjdx.lifegame.Plugins.ICONer;
 import com.jjdx.lifegame.Structure.Structure;
 import com.jjdx.lifegame.Structure.StructureManger;
 import com.jjdx.lifegame.Utils.Config;

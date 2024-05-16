@@ -47,7 +47,6 @@ public class MainFrame extends Application {
     int width, height;
     int fact = 1;//加速因子
     boolean isStart = false;//生命是否为运行状态
-
     int offsetX, offsetY;//方格的偏移量
     public int row, col, len;//方格的行列数和每块的边长
     public static Rectangle[][] map;//方格
@@ -84,6 +83,7 @@ public class MainFrame extends Application {
         len = Config.get("board.len", 0);//方格的行列数和每块的边长
         liveColor = Config.get("board.liveColor", Color.WHITE);
         deadColor = Config.get("board.deadColor", Color.BLACK);
+
     }
 
     /**
@@ -169,7 +169,21 @@ public class MainFrame extends Application {
      添加按钮
      */
     private void initButton() {
-        List<Pair<String, EventHandler<MouseEvent>>> textWithMethod = Arrays.asList(new Pair<>("开始/停止", e -> startOrStopGame()), new Pair<>("执行一步", e -> runGame()), new Pair<>("回退一步", e -> backGame()), new Pair<>("清空图像", e -> clearMap()), new Pair<>("平移图像", e -> moveMap()), new Pair<>("玩法帮助", e -> getHelp()), new Pair<>("速度×" + fact, this::changeSpeed), new Pair<>("添加为静物", e -> printFile("still")), new Pair<>("添加为震荡", e -> printFile("oscillator")), new Pair<>("添加为飞行器", e -> printFile("fly")), new Pair<>("添加为繁殖", e -> printFile("reproduction")), new Pair<>("添加为寿星", e -> printFile("longLife")), new Pair<>("保存到文件", e -> saveFile()), new Pair<>("从文件加载", e -> loadFile()));
+        List<Pair<String, EventHandler<MouseEvent>>> textWithMethod = Arrays.asList(
+                new Pair<>("开始/停止", e -> startOrStopGame()),
+                new Pair<>("执行一步", e -> runGame()),
+                new Pair<>("回退一步", e -> backGame()),
+                new Pair<>("清空图像", e -> clearMap()),
+                new Pair<>("平移图像", e -> moveMap()),
+                new Pair<>("玩法帮助", e -> getHelp()),
+                new Pair<>("速度×" + fact, this::changeSpeed),
+                new Pair<>("添加为静物", e -> printFile("still")),
+                new Pair<>("添加为震荡", e -> printFile("oscillator")),
+                new Pair<>("添加为飞行器", e -> printFile("fly")),
+                new Pair<>("添加为繁殖", e -> printFile("reproduction")),
+                new Pair<>("添加为寿星", e -> printFile("longLife")),
+                new Pair<>("保存到文件", e -> saveFile()),
+                new Pair<>("从文件加载", e -> loadFile()));
         for (var textAndFunc : textWithMethod) {
             String text = textAndFunc.getKey();
             int[] buttonPos = getButtonPos();
