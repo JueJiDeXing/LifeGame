@@ -29,6 +29,10 @@ public class Util {
         return 0 <= x && x < n && 0 <= y && y < m;
     }
 
+    public static boolean isValid(int[] pos, int n, int m) {
+        return 0 <= pos[0] && pos[0] < n && 0 <= pos[1] && pos[1] < m;
+    }
+
     public static int max(int x, int... y) {
         for (int t : y) x = Math.max(x, t);
         return x;

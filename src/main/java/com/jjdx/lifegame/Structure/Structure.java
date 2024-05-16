@@ -14,7 +14,7 @@ import java.util.List;
 public class Structure {
 
     String name;//类名
-    List<Pair<String, List<Pair<Integer, Integer>>>> struct = new ArrayList<>();//每个图形
+    List<Pair<String, List<int[]>>> struct = new ArrayList<>();//每个图形
     Integer rowMaxLen = null, colMaxLen = null;
 
     public Structure(String name) {
@@ -40,13 +40,13 @@ public class Structure {
     /**
      计算图像的行列最大值
      */
-    public int[] calMaxLen(List<Pair<String, List<Pair<Integer, Integer>>>> structs) {
+    public int[] calMaxLen(List<Pair<String, List<int[]>>> structs) {
         int maxRow = 0, maxCol = 0;
         for (var struct : structs) {
-            List<Pair<Integer, Integer>> poss = struct.getValue();//每一个结构的位置信息
+            List<int[]> poss = struct.getValue();//每一个结构的位置信息
             for (var p : poss) {
-                maxRow = Math.max(maxRow, p.getKey());
-                maxCol = Math.max(maxCol, p.getValue());
+                maxRow = Math.max(maxRow, p[0]);
+                maxCol = Math.max(maxCol, p[1]);
             }
         }
         return new int[]{maxRow + 1, maxCol + 1};
@@ -60,15 +60,16 @@ public class Structure {
         return struct.isEmpty();
     }
 
-    public Pair<String, List<Pair<Integer, Integer>>> getFirst() {
+    public Pair<String, List<int[]>> getFirst() {
         return struct.get(0);
     }
 
-    public Pair<String, List<Pair<Integer, Integer>>> get(int index) {
+    public Pair<String, List<int[]>> get(int index) {
         return struct.get(index);
     }
 
     public String getName() {
         return name;
     }
+
 }

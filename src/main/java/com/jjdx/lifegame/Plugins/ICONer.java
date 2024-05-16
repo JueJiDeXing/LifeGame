@@ -38,7 +38,7 @@ public class ICONer {
             cache.put(fileName, ans);
             return ans;
         } catch (IOException e) {
-            MyLogger.config("转换图标失败 : " + e.getMessage());
+            MyLogger.severe("转换图标失败 : " + e.getMessage());
             return null;
         }
     }

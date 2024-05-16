@@ -98,6 +98,15 @@ public class HelpFrame {
         for (Label label : bar) pane.getChildren().add(label);
     }
 
+    private void copyButton() {
+        Label copy = Creator.creatButton("复制到主页", width * 3 / 4, height * 3 / 4, 100, 50);
+        copy.setOnMouseClicked(e -> {
+            List<int[]> poss = graphs.get(curPage - 1).getValue();
+            MainFrame.setStruct(poss);
+        });
+        pane.getChildren().add(copy);
+    }
+
     /**
      重新加载图形,并刷新
      */
@@ -159,14 +168,14 @@ public class HelpFrame {
         isShowMain = false;
         pane.setStyle("-fx-background-color: " + Config.getString("HelpFrame.structBackgroundColor"));
         addBar();
-
+        copyButton();
         curPage = 1;
         maxPage = structs.getSize();
         addPage();
 
         if (structs.isEmpty()) return;
         graphs = structs;
-        Pair<String, List<Pair<Integer, Integer>>> first = graphs.getFirst();
+        Pair<String, List<int[]>> first = graphs.getFirst();
         setNameLabelText(first.getKey());
         pane.getChildren().add(nameLabel);
 
@@ -215,11 +224,11 @@ public class HelpFrame {
 
      @param graph 要绘制的图像 < 图像名, 位置信息 >
      */
-    private void drawGraph(Pair<String, List<Pair<Integer, Integer>>> graph) {
+    private void drawGraph(Pair<String, List<int[]>> graph) {
         clearMap();
         setNameLabelText(graph.getKey());
-        for (Pair<Integer, Integer> p : graph.getValue()) {
-            map[p.getKey() + extraBlock / 2][p.getValue() + extraBlock / 2].setFill(liveColor);
+        for (int[] p : graph.getValue()) {
+            map[p[0] + extraBlock / 2][p[1] + extraBlock / 2].setFill(liveColor);
         }
     }
 

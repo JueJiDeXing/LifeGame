@@ -23,7 +23,8 @@ import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.jjdx.lifegame.Plugins.Util.*;
+import static com.jjdx.lifegame.Plugins.Util.isValid;
+import static com.jjdx.lifegame.Plugins.Util.sleep;
 
 /**
  生命游戏主页面
@@ -41,13 +42,15 @@ public class MainFrame extends Application {
     Stage primaryStage;
     int offsetX, offsetY;//方格的偏移量
     public int row, col, len;//方格的行列数和每块的边长
-    public Rectangle[][] map;//方格
-    public Color liveColor, deadColor;//细胞的死活颜色
+    public static Rectangle[][] map;//方格
+    public static Color liveColor;
+    public static Color deadColor;//细胞的死活颜色
     int fact = 1;//加速因子
-    int liveCnt = 0;//存活数量
+    static int liveCnt = 0;//存活数量
     boolean isStart = false;//生命是否为运行状态
-    Label liveText;//存活数量显示
+    static Label liveText;//存活数量显示
     int width, height;
+
 
     @Override
     public void start(Stage stage) {
@@ -57,10 +60,10 @@ public class MainFrame extends Application {
             Scene scene = new Scene((rootPane = new Pane()), width, height);
             initStage(stage);
             MyLogger.fine("stage初始化完毕");
-            initGrid();
-            setInitialSituation();
             initButton();
             initLiveText();
+            initGrid();
+            setInitialSituation();
             MyLogger.fine("主窗口初始化完毕");
             return scene;
         });
@@ -119,15 +122,28 @@ public class MainFrame extends Application {
         String struct = FileUtil.readFile(FileUtil.findFilePath("InitialSituation.txt"));
         if (struct.isEmpty()) return;
         String[] split = struct.split(" ");
-        for (int i = 0; i < split.length - 1; i += 2) {
+        List<int[]> poss = new ArrayList<>();
+        for (int i = 0; i < split.length; i += 2) {
             try {
                 int r = Integer.parseInt(split[i]), c = Integer.parseInt(split[i + 1]);
-                map[r][c].setFill(liveColor);
+                poss.add(new int[]{r, c});
             } catch (Exception e) {
                 MyLogger.fine("错误坐标:" + split[i] + " " + split[i + 1]);
             }
         }
-        liveCnt += split.length / 2;
+        setStruct(poss);
+    }
+
+    public static void setStruct(List<int[]> poss) {
+        clearMap();
+        for (int[] pos : poss) {
+            if (!isValid(pos, map.length, map[0].length)) {
+                MyLogger.fine("坐标越界:" + Arrays.toString(pos));
+                continue;
+            }
+            map[pos[0]][pos[1]].setFill(liveColor);
+            liveCnt++;
+        }
     }
 
     int buttonStartX = 1000, buttonStartY = 60, buttonWidth = 100, buttonHeight = 80;
@@ -210,7 +226,7 @@ public class MainFrame extends Application {
         rootPane.getChildren().add(liveText);
     }
 
-    private void setLiveText(int live) {
+    private static void setLiveText(int live) {
         liveCnt = live;
         liveText.setText("当前存活: " + liveCnt);
     }
@@ -265,23 +281,7 @@ public class MainFrame extends Application {
      更新一步状态
      */
     void update() {
-        List<int[]> needUpdate = new ArrayList<>();
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col; j++) {
-                int cnt = 0;
-                for (int[] d : eightDir) {
-                    int nI = i + d[0], nJ = j + d[1];
-                    if (!isValid(nI, nJ, row, col)) continue;
-                    if (isLive(nI, nJ)) cnt++;
-                }
-                if (isLive(i, j)) {//活细胞
-                    // 孤独/拥挤
-                    if (cnt <= 1 || 4 <= cnt) needUpdate.add(new int[]{i, j});
-                } else {//死细胞,繁衍
-                    if (cnt == 3) needUpdate.add(new int[]{i, j});
-                }
-            }
-        }
+        List<int[]> needUpdate = Rule.update(map, liveColor);
         Platform.runLater(() -> Achievement.alertAchievement(needUpdate.isEmpty(), Achievement.Achieve.Stable));
 
         for (int[] p : needUpdate) {
@@ -309,7 +309,7 @@ public class MainFrame extends Application {
     /**
      清空活细胞
      */
-    private void clearMap() {
+    private static void clearMap() {
         for (Rectangle[] rects : map) {
             for (Rectangle rect : rects) {
                 rect.setFill(deadColor);

@@ -30,7 +30,8 @@ public class AnimationFrame {
             try {
                 return sceneCallable.call();//异步执行,拿到返回值 Scene mainFrame
             } catch (Exception e) {
-                MyLogger.severe("主窗口加载失败, 程序退出");
+                e.printStackTrace();
+                MyLogger.severe("主窗口加载失败, 程序退出: ");
                 System.exit(-1);
             }
             return null;

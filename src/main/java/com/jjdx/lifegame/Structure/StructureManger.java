@@ -47,7 +47,8 @@ public class StructureManger {
     /**
      加载type类型的图形到structs
      */
-    static void load(List<Pair<String, List<Pair<Integer, Integer>>>> structs, String type) {
+    static void load(List<Pair<String, List<int[]>>> structs, String type) {
+        structs.clear();
         try {
             String filePath = FileUtil.findFilePath(type + ".txt");
             BufferedReader br = new BufferedReader(new FileReader(filePath));
@@ -55,9 +56,9 @@ public class StructureManger {
                 String[] split = line.split(" ");
                 String name = split[0];
                 int[] poss = Arrays.stream(split).skip(1).mapToInt(Integer::parseInt).toArray();
-                List<Pair<Integer, Integer>> map = new ArrayList<>();
+                List<int[]> map = new ArrayList<>();
                 for (int i = 0; i < poss.length; i += 2) {
-                    map.add(new Pair<>(poss[i], poss[i + 1]));
+                    map.add(new int[]{poss[i], poss[i + 1]});
                 }
                 structs.add(new Pair<>(name, map));
             });
